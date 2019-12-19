@@ -8,7 +8,9 @@ schedule = db.get_table('schedule')
 
 import csv
 with open('schedule.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile, delimiter='|')
     for slot in schedule.all(order_by=['datestamp']):
-        print(slot.values())
-        writer.writerow(slot.values())
+        print('|', end='')
+        for column in slot.values():
+            print(f"{column}|", end='')
+        print('|')
+
