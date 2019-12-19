@@ -199,6 +199,7 @@ def add_time_slots(
                             field=f"{field}")
                     # adds field data
                     for (key, value) in field_data[field].items():
+                        if key is 'field_name': continue  # redundant
                         mydata[key] = value
 
                     table.insert(mydata)
