@@ -33,8 +33,18 @@ def faceoffs(teams):
             output.append(faceoff)
     return(output)
 
+# Repeating cycle of faceoffs when # games > faceoffs
+def faceoffs_repeated(teams, games=None):
+    cycle=faceoffs(teams)
+    if games:
+        cycles = cycle * (games // len(cycle) + 1)
+        return(cycles[:games])
+    else:
+        return(cycle)
+
 if __name__ == "__main__":
     print('Demo of faceoffs function')
     teams = list(range(1,7))
+    teams = ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6']
     print(f"Teams: {teams}")
     print(f"Faceoffs: {faceoffs(teams)}")

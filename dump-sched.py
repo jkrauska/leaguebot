@@ -12,6 +12,7 @@ db = dataset.connect('sqlite:///little-league.db')
 schedule = db.get_table('schedule')
 
 output = """
+<!DOCTYPE html>
 <html>
 <head>
 <title>Schedule Output</title>

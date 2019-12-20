@@ -3,7 +3,7 @@
 import dataset
 from datetime import datetime, timedelta
 from itertools import combinations
-
+import faceoffs
 
 # helpers
 fort_scott=['Ft. Scott - North', 'Ft. Scott - South']
@@ -37,24 +37,59 @@ for slot in schedule.find(week='Week 1',  infield='dirt', field=tepper_ketcham, 
     schedule.update(data, ['id'])
 
 
-### Main schedule:
+def complex_assign(division=None, start_week=2, end_week=12, day_of_week='Saturday', fields=None):
+    print(f"Division: {division}")
 
+    team_list = [ team['team_name'] for team in teams.distinct('team_name', division_name=division)]
+    print(f"\tTeams: {team_list}")
+
+    division_data=teams.find_one(division_name=division)
+    games=division_data['games']
+    print(f"\tGames Per Team: {games}")
+    total_games = games * len(team_list) // 2
+    print(f"\tTotal Games: {total_games}")
+
+    faceoff_list = faceoffs.faceoffs_repeated(team_list, total_games)
+    print(f"\tFaceOffs {len(faceoff_list)}: {faceoff_list}")
+
+    max_per_week=total_games // (end_week - start_week)
+    scheduled=0
+
+    for week in range(start_week,end_week+3):
+        print(f"Week: {week}")
+        week_count=0
+        for slot in schedule.find(
+            day_of_week=day_of_week,
+            week_number=week,
+            field=fields):
+
+            if week_count >= max_per_week: continue  # total for week met
+            if slot['home_team'] is not None: continue  # aleready booker
+
+            try:
+                (home_team, away_team)=faceoff_list.pop(0)
+            except :
+                # No games left to assign
+                continue
+
+            print(f"\tAssigned {division} - {home_team} vs {away_team} to Slot {slot['id']} - TODO {len(faceoff_list)}")
+            data = dict(id=slot['id'], home_team=home_team,
+                    away_team=away_team, division=division)
+            schedule.update(data, ['id'])
+            week_count+=1
+            scheduled+=1
+    print(f"Scheduled {scheduled} games")
+    print(f"TODO {faceoff_list}")
+
+
+### Main schedule:
 
 # Lower Farm and Upper Farm have only weekend games and ends on 5/17.
 # have Upper Farm games on Saturday and Lower Farm games all on Sunday
 # Need  Paul Goode Practice Field allotment
 
-
-team_list = [ team['team_name'] for team in teams.find(division_name='Upper Farm')]
-faceoffs = list(combinations(team_list, 2))
-
-print(team_list)
-print(faceoffs)
-for week in range(2,12):
-    for slot in schedule.find(day_of_week='Saturday', week=week, field=fort_scott):
-        data = dict(id=slot['id'], home_team=team['team_name'], divsion=team['division_name'])
-        #schedule.update(data, ['id'])
-
+complex_assign(division='Lower Farm', start_week=2, end_week=12, day_of_week='Sunday',   fields=fort_scott)
+complex_assign(division='Upper Farm', start_week=2, end_week=12, day_of_week='Saturday', fields=fort_scott)
 
 
 """
@@ -66,11 +101,6 @@ No other division needs a schedule for that weekend and all other schedules shou
 
 3. No Friday games on TI unless absolutely necessary.
 
-5. Lower Farm and Upper Farm have only weekend games and ends on 5/17.
-(In the really nice to have, it would be good to have Upper Farm games
-on Saturday and Lower Farm games all on Sunday – that will depend on
-the Paul Goode Practice Field allotment and whether we want to rotate
-teams through that turf field)
 
 6. Rookie is supposed to end on May 5/17 but also have playoffs.
 We should probably plan on pool play with two pools of 4 teams, and the  winner from each pool playing

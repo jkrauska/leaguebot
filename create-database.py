@@ -17,19 +17,19 @@ def datestamp_to_datetime(datestamp):
 # Week name to date ranges
 week_split_data = {
     'Week 1': date_to_datetime('2/28/2020'),
-    'Week 2': date_to_datetime('3/7/2020'),
+    'Week 2': date_to_datetime('3/6/2020'),
     'Week 3': date_to_datetime('3/14/2020'),
-    'Week 4': date_to_datetime('3/21/2020'),
-    'Week 5': date_to_datetime('3/28/2020'),
-    'Week 6': date_to_datetime('4/4/2020'),
-    'Week 7': date_to_datetime('4/11/2020'),
-    'Week 8': date_to_datetime('4/18/2020'),
+    'Week 4': date_to_datetime('3/20/2020'),
+    'Week 5': date_to_datetime('3/27/2020'),
+    'Week 6': date_to_datetime('4/3/2020'),
+    'Week 7': date_to_datetime('4/10/2020'),
+    'Week 8': date_to_datetime('4/17/2020'),
     'Week 9': date_to_datetime('4/25/2020'),
-    'Week 10': date_to_datetime('5/2/2020'),
-    'Week 11': date_to_datetime('5/9/2020'),
-    'Week 12': date_to_datetime('5/17/2020'),
-    'Week 13': date_to_datetime('5/23/2020'),
-    'Week 14': date_to_datetime('5/30/2020')
+    'Week 10': date_to_datetime('5/1/2020'),
+    'Week 11': date_to_datetime('5/8/2020'),
+    'Week 12': date_to_datetime('5/15/2020'),
+    'Week 13': date_to_datetime('5/22/2020'),
+    'Week 14': date_to_datetime('5/29/2020')
 }
 
 division_data = {
@@ -146,9 +146,10 @@ field_data = {
 # No games Easter weekend on Saturday or Sunday.
 # No games on Memorial Day weekend on Saturday, Sunday or Monday.
 blackout_dates = [
-    '4/11/2020', '4/12/2020', # Easter
-    '5/23/2020', '5/24/2020', '5/25/2020', # Memorial Day
-    '5/14/2020' # Mothers Day
+    '4/11/2020', '4/12/2020', # Easter (week 11)
+    '5/14/2020', # Mothers Day
+    '5/23/2020', '5/24/2020', '5/25/2020'  # Memorial Day (week 13)
+
 ]
 # Datetime conversion for blackouts
 blackout_days = [ date_to_datetime(item) for item in blackout_dates ]
@@ -265,12 +266,12 @@ add_time_slots(
     end_day='3/28/2020',
     times=[('11:00','13:15'),('13:15', '15:30')])
 
-# Saturdays W6-W12
+# Saturdays W6-W14
 add_time_slots(
     fields=fort_scott,
     days_of_week=['Saturday'],
     start_day='4/4/2020',
-    end_day='5/15/2020',
+    end_day='5/30/2020',
     times=[('09:30','12:30'),('12:30', '15:30'),('15:30','18:15')])
 
 # Friday W1
