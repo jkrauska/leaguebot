@@ -1,70 +1,64 @@
 #!/usr/bin/env python3
 
+"""
+Script to dump schedule database to a HTML table for easy presentation on a webpage
+Uses datatable library for prettier output.
+"""
+
 import dataset
 import csv
 
 db = dataset.connect('sqlite:///little-league.db')
 schedule = db.get_table('schedule')
 
-# import csv
+output = """
+<html>
+<head>
+<title>Schedule Output</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="https://datatables.net/media/css/site-examples.css">
+</head>
 
-# print('|', end='')
-# for header in schedule.find_one().keys():
-#     print(f"{header}|", end='')
-# print()
-
-# print('|', end='')
-# for header in schedule.find_one().keys():
-#     print(f" --- |", end='')
-# print()
-
-# for slot in schedule.all(order_by=['datestamp']):
-#     print('|', end='')
-#     for column in slot.values():
-#         print(f"{column}|", end='')
-#     print()
-
-output = "<html>"
-output +="<head>"
-output+="""<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">"""
-output +="</head>"
-output +="<body>"
-
-
-
-
-output += """
-<table id="table_id" class="display">
-<thread>
+<body>
+<table id="example" class="display" style="width:100%">
+<thead>
 <tr>"""
-
 
 for header in schedule.find_one().keys():
     output += f"<th>{header}</th>"
-output += '</tr></thread>'
+output+="</tr>\n</thead>\n"
 
-output += "<tr>"
+output+="<tbody>\n"
 for slot in schedule.all(order_by=['datestamp']):
+    output+='<tr>'
     for column in slot.values():
         output+=f"<td>{column}</td>"
-    output+='</tr>'
+    output+="</tr>\n"
 
-output+="""</table>
-<script
-  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-  crossorigin="anonymous"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-
-  <script>
-  $(function(){
-    $("#table_id").dataTable();
-  })
-  </script>
+output+="""
+</tbody>
+</table>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#example').DataTable( {
+        "order": [[ 7, "asc" ]],
+        "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+        "columnDefs": [
+            {
+                "targets": [ 0, 2 ],
+                "visible": false,
+                "searchable": false
+            }
+        ]
+    } );
+} );
+</script>
 </body>
 </html>
 """
 
-hs = open("docs/output.html", 'w')
-hs.write(output)
+html = open("docs/output.html", 'w')
+html.write(output)
 
