@@ -44,7 +44,7 @@ output+="""
 $(document).ready(function() {
     $('#example').DataTable( {
         "order": [[ 7, "asc" ]],
-        "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+        "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
         "columnDefs": [
             {
                 "targets": [ 0, 2 ],
