@@ -49,12 +49,12 @@ division_data = {
         'playoffs': 5
         },
     'Minors AA': {
-        'teams': 7,
+        'teams': 6,
         'games': 14,
         'playoffs': 5
         },
     'Minors AAA': {
-        'teams': 7,
+        'teams': 8,
         'games': 14,
         'playoffs': 5
         },
