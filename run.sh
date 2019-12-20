@@ -8,6 +8,6 @@ rm little-league.db
 
 ./dump-sched.py
 
-tidy docs/output.html > docs/output2.html
+tidy -quiet docs/output.html > docs/output2.html
 mv docs/output2.html docs/output.html
 

@@ -193,11 +193,14 @@ def add_time_slots(
                     mydata = dict(
                             week=f"{schedule_week}",
                             week_number=week_number,
-                            date=f"{single_date.date()}",
                             day_of_week=f"{day_of_week}",
+                            date=f"{single_date.date()}",
                             start=f"{start_time}", end=f"{end_time}",
                             datestamp=datestamp,
-                            field=f"{field}")
+                            field=f"{field}",
+                            division=None,
+                            home_team=None,
+                            away_team=None)
                     # adds field data
                     for (key, value) in field_data[field].items():
                         if key is 'field_name': continue  # redundant

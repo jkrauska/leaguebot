@@ -38,6 +38,7 @@ for slot in schedule.find(week='Week 1',  infield='dirt', field=tepper_ketcham, 
 
 
 def complex_assign(division=None, start_week=2, end_week=12, day_of_week='Saturday', fields=None):
+    print('-'*80)
     print(f"Division: {division}")
 
     team_list = [ team['team_name'] for team in teams.distinct('team_name', division_name=division)]
