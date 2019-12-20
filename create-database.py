@@ -35,7 +35,7 @@ week_split_data = {
 division_data = {
     'Lower Farm': {
         'teams': 4,
-        'games': 11,
+        'games': 10,
         'playoffs': None
         },
     'Upper Farm': {
