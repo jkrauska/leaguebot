@@ -88,6 +88,8 @@ def complex_assign(division=None, start_week=2, end_week=12, day_of_week='Saturd
 # Lower Farm and Upper Farm have only weekend games and ends on 5/17.
 # have Upper Farm games on Saturday and Lower Farm games all on Sunday
 # Need  Paul Goode Practice Field allotment
+# two slots on sunday on practice field
+# 
 
 complex_assign(division='Lower Farm', start_week=2, end_week=12, day_of_week='Sunday',   fields=fort_scott)
 complex_assign(division='Upper Farm', start_week=2, end_week=12, day_of_week='Saturday', fields=fort_scott)

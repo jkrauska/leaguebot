@@ -313,6 +313,7 @@ add_time_slots(
 
 ##################
 # Sunset
+# traditionally 
 add_time_slots(
     fields=['SouthSunset #1 North'],
     days_of_week=['Friday'],
@@ -354,3 +355,6 @@ add_time_slots(
     start_day='3/7/2020',
     end_day='5/25/2020',
     times=[('9:00','12:00')])
+
+
+# Coaches who coach in both divisions -- check for conflicts?
