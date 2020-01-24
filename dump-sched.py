@@ -6,11 +6,23 @@ Uses datatable library for prettier output.
 """
 
 import dataset
+import datafreeze
 import csv
 
 db = dataset.connect('sqlite:///little-league.db')
 schedule = db.get_table('schedule')
 
+
+# CSV
+with open('output.csv', 'w', newline='') as csvfile:
+    spamwriter = csv.writer(csvfile)
+    # header row
+    spamwriter.writerow(schedule.find_one().keys())
+    for slot in schedule.all(order_by=['datestamp']):
+        spamwriter.writerow(slot.values())
+
+
+# HTML
 output = """
 <!DOCTYPE html>
 <html>
@@ -60,6 +72,6 @@ $(document).ready(function() {
 </html>
 """
 
-html = open("docs/output.html", 'w')
+html = open("output.html", 'w')
 html.write(output)
 

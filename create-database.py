@@ -14,22 +14,23 @@ def datestamp_to_datetime(datestamp):
 
 # League Data
 
-# Week name to date ranges
+# Week name to date ranges (weeks start on Saturdays)
 week_split_data = {
     'Week 1': date_to_datetime('2/28/2020'),
-    'Week 2': date_to_datetime('3/6/2020'),
+    'Week 2': date_to_datetime('3/7/2020'),
     'Week 3': date_to_datetime('3/14/2020'),
-    'Week 4': date_to_datetime('3/20/2020'),
-    'Week 5': date_to_datetime('3/27/2020'),
-    'Week 6': date_to_datetime('4/3/2020'),
-    'Week 7': date_to_datetime('4/10/2020'),
-    'Week 8': date_to_datetime('4/17/2020'),
+    'Week 4': date_to_datetime('3/21/2020'),
+    'Week 5': date_to_datetime('3/28/2020'),
+    'Week 6': date_to_datetime('4/4/2020'),
+    'Week 7': date_to_datetime('4/11/2020'),
+    'Week 8': date_to_datetime('4/18/2020'),
     'Week 9': date_to_datetime('4/25/2020'),
-    'Week 10': date_to_datetime('5/1/2020'),
-    'Week 11': date_to_datetime('5/8/2020'),
-    'Week 12': date_to_datetime('5/15/2020'),
-    'Week 13': date_to_datetime('5/22/2020'),
-    'Week 14': date_to_datetime('5/29/2020')
+    'Week 10': date_to_datetime('5/2/2020'),
+    'Week 11': date_to_datetime('5/9/2020'),
+    'Week 12': date_to_datetime('5/16/2020'),
+    'Week 13': date_to_datetime('5/23/2020'),
+    # Memorial day is Monday 5/25/2020
+    'Week 14': date_to_datetime('5/30/2020')
 }
 
 division_data = {
@@ -40,6 +41,7 @@ division_data = {
         },
     'Upper Farm': {
         'teams': 6,
+        # Dropped from 11 to 10
         'games': 11,
         'playoffs': None
         },
@@ -91,51 +93,61 @@ division_data = {
 
 field_data = {
     'Ft. Scott - North': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'grass',
         'infield': 'grass'
     },
     'Ft. Scott - South': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'grass',
         'infield': 'dirt'
     },
     'Tepper': {
+        'location': 'TI',
         'size': '46/60',
         'type': 'grass',
         'infield': 'grass'
     },
     'Ketcham': {
+        'location': 'TI',
         'size': '46/60',
         'type': 'grass',
         'infield': 'dirt'
     },
     'SouthSunset #1 North': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'turf',
         'infield': 'turf'
     },
     'SouthSunset #2 South': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'turf',
         'infield': 'turf'
     },
     'Kimbell #1 NW': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'turf',
         'infield': 'turf'
     },
     'Kimbell #2 SE': {
+        'location': 'SF',
         'size': '46/60',
         'type': 'turf',
         'infield': 'turf'
     },
     'McCoppin': {
+        'location': 'SF',
         'size': '60/90',
         'type': 'grass',
         'infield': 'grass'
     },
     'Sweeney': {
+        'location': 'SF',
         'size': '60/90',
         'type': 'grass',
         'infield': 'grass'
@@ -313,47 +325,53 @@ add_time_slots(
 
 ##################
 # Sunset
-# traditionally 
 add_time_slots(
     fields=['SouthSunset #1 North'],
     days_of_week=['Friday'],
-    start_day='3/7/2020',
-    end_day='5/25/2020',
+    start_day='3/6/2020',
+    end_day='5/29/2020',
     times=[('17:30','20:00')])
 
 add_time_slots(
     fields=['SouthSunset #2 South'],
     days_of_week=['Tuesday', 'Thursday', 'Friday'],
-    start_day='3/30/2020',
-    end_day='5/25/2020',
-    times=[('17:00','19:30')])
+    start_day='3/3/2020',
+    end_day='5/29/2020',
+    times=[('17:30','20:00')])
 
 ##################
 # Kimbell
 add_time_slots(
     fields=['Kimbell #1 NW', 'Kimbell #2 SE'],
     days_of_week=['Wednesday'],
-    start_day='3/30/2020',
-    end_day='5/25/2020',
-    times=[('17:00','19:30')])
+    start_day='3/4/2020',
+    end_day='5/29/2020',
+    times=[('17:30','20:00')])
 
 ##################
 # BIG FIELDS
 
-# McCoppin
+# McCoppin (Challenger)
 add_time_slots(
     fields=['McCoppin'],
     days_of_week=['Sunday'],
-    start_day='3/7/2020',
-    end_day='5/25/2020',
+    start_day='3/8/2020',
+    end_day='5/17/2020',
     times=[('12:00','15:00')])
 
-# Sweeney
+# Sweeney (Juniors)  No May 23
 add_time_slots(
     fields=['Sweeney'],
     days_of_week=['Saturday'],
     start_day='3/7/2020',
-    end_day='5/25/2020',
+    end_day='5/22/2020',
+    times=[('9:00','12:00')])
+
+add_time_slots(
+    fields=['Sweeney'],
+    days_of_week=['Saturday'],
+    start_day='5/30/2020',
+    end_day='5/30/2020',
     times=[('9:00','12:00')])
 
 

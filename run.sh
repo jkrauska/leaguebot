@@ -1,13 +1,18 @@
 #!/bin/bash
 
+# remove old data file
 rm little-league.db
 
+# create new data file
 ./create-database.py
 
-./run-sched.py
+# apply schedule
+./run-sched.py | tee report.log
 
+# save schedule to html and csv
 ./dump-sched.py
 
-tidy -quiet docs/output.html > docs/output2.html
-mv docs/output2.html docs/output.html
+# tidy the html
+tidy -quiet output.html > output2.html
+mv output2.html output.html
 
