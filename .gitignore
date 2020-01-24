@@ -1,3 +1,4 @@
 *.db
 report*.log
 output.*
+secret.json
