@@ -9,6 +9,7 @@ rm little-league.db
 # apply schedule
 ./run-sched.py | tee report.log
 
+
 # save schedule to html and csv
 ./dump-sched.py
 

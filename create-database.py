@@ -42,7 +42,7 @@ division_data = {
     'Upper Farm': {
         'teams': 6,
         # Dropped from 11 to 10
-        'games': 11,
+        'games': 10,
         'playoffs': None
         },
     'Rookie': {
@@ -140,6 +140,18 @@ field_data = {
         'type': 'turf',
         'infield': 'turf'
     },
+    'Paul Goode Practice': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'turf',
+        'infield': 'turf'
+    },
+    'Paul Goode Main': {
+        'location': 'SF',
+        'size': '60/90',
+        'type': 'turf',
+        'infield': 'turf'
+    },        
     'McCoppin': {
         'location': 'SF',
         'size': '60/90',
@@ -209,6 +221,7 @@ def add_time_slots(
                             date=f"{single_date.date()}",
                             start=f"{start_time}", end=f"{end_time}",
                             datestamp=datestamp,
+                            day_of_year=f"{single_date.timetuple().tm_yday}",
                             field=f"{field}",
                             division=None,
                             home_team=None,
@@ -349,30 +362,61 @@ add_time_slots(
     times=[('17:30','20:00')])
 
 ##################
-# BIG FIELDS
-
-# McCoppin (Challenger)
+# Paul Goode
 add_time_slots(
-    fields=['McCoppin'],
+    fields=['Paul Goode Practice'],
+    days_of_week=['Saturday'],
+    start_day='3/13/2020',
+    end_day='5/30/2020',
+    times=[('11:00','13:00')])
+
+add_time_slots(
+    fields=['Paul Goode Practice'],
     days_of_week=['Sunday'],
     start_day='3/8/2020',
-    end_day='5/17/2020',
+    end_day='3/29/2020',
+    times=[('13:00','15:00')])
+
+add_time_slots(
+    fields=['Paul Goode Practice'],
+    days_of_week=['Sunday'],
+    start_day='4/5/2020',
+    end_day='4/13/2020',
     times=[('12:00','15:00')])
 
-# Sweeney (Juniors)  No May 23
 add_time_slots(
-    fields=['Sweeney'],
-    days_of_week=['Saturday'],
-    start_day='3/7/2020',
-    end_day='5/22/2020',
-    times=[('9:00','12:00')])
+    fields=['Paul Goode Practice'],
+    days_of_week=['Sunday'],
+    start_day='4/19/2020',
+    end_day='5/31/2020',
+    times=[('1:00','15:00')])
 
-add_time_slots(
-    fields=['Sweeney'],
-    days_of_week=['Saturday'],
-    start_day='5/30/2020',
-    end_day='5/30/2020',
-    times=[('9:00','12:00')])
+
+##################
+# BIG FIELDS
+
+# # McCoppin (Challenger)
+# add_time_slots(
+#     fields=['McCoppin'],
+#     days_of_week=['Sunday'],
+#     start_day='3/8/2020',
+#     end_day='5/17/2020',
+#     times=[('12:00','15:00')])
+
+# # Sweeney (Juniors)  No May 23
+# add_time_slots(
+#     fields=['Sweeney'],
+#     days_of_week=['Saturday'],
+#     start_day='3/7/2020',
+#     end_day='5/22/2020',
+#     times=[('9:00','12:00')])
+
+# add_time_slots(
+#     fields=['Sweeney'],
+#     days_of_week=['Saturday'],
+#     start_day='5/30/2020',
+#     end_day='5/30/2020',
+#     times=[('9:00','12:00')])
 
 
 # Coaches who coach in both divisions -- check for conflicts?

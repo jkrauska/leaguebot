@@ -77,29 +77,29 @@ $(document).ready(function() {
 html = open("output.html", 'w')
 html.write(output)
 
-from sheetfu import SpreadsheetApp
+
+
+# Google Sheet
 sa = SpreadsheetApp('secret.json')
 spreadsheet = sa.open_by_id('12BDEIWO_85BN6egolnUqIpHQ6yRPyx35VnccSCQD2Ag')
-
 try:
     spreadsheet.create_sheets('NEW')
 except:
     pass
+
 sheet = spreadsheet.get_sheet_by_name('NEW')
 
 
 output = []
-
 header = list(schedule.find_one().keys())
 output.append(header)
 for slot in schedule.all(order_by=['datestamp']):
     output.append(list(slot.values()))
-
-#print(output)
 
 data_range = sheet.get_range(row=1, 
                             column=1, 
                             number_of_row=len(output),
                             number_of_column=(len(output[0])))
 
+# Apply
 data_range.set_values(output)

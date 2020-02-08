@@ -18,11 +18,22 @@ schedule = db.get_table('schedule')
 
 field_types=Counter()
 
+"""
+- Analysis pass per team
+turf vs grass
+ti vs sf
+weekend vs weekday
+home vs away
+field count
+"""
+
 for slot in schedule.all():
-    if slot['home_team'] is not None and slot['division'] is not None:
-        field_types['%s - %s - %s' % (slot['division'], slot['home_team'], slot['type'])] += 1
-        field_types['%s - %s - %s' % (slot['division'], slot['away_team'], slot['type'])] += 1
+    for team in [slot['home_team'], slot['away_team']]:
+        if team is not None:
+            division_and_team = '%s - %s' % (slot['division'], team)
+            field_types['%s - %s' % (division_and_team, slot['type'])] += 1
 
 
+print(field_types)
 for value, count in sorted(field_types):
     print(value, count)
