@@ -389,7 +389,7 @@ add_time_slots(
     days_of_week=['Sunday'],
     start_day='4/19/2020',
     end_day='5/31/2020',
-    times=[('1:00','15:00')])
+    times=[('13:00','15:00')])
 
 
 ##################
