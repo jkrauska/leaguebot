@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # remove old data file
 rm little-league.db
 

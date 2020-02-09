@@ -9,6 +9,7 @@ import dataset
 import datafreeze
 import csv
 from sheetfu import SpreadsheetApp
+from collections import OrderedDict, Counter
 
 
 db = dataset.connect('sqlite:///little-league.db')
@@ -95,18 +96,20 @@ def get_teams(division):
 
 
 def get_games(division, team):
-    print('Getting games for %s %s' % (division, team))
+    #print('Getting games for %s %s' % (division, team))
     myoutput=[]
     for slot in schedule.find(division=division, order_by=['datestamp']):
         if team == slot['home_team'] or team == slot['away_team']:
             myoutput.append(list(slot.values()))
-    print('Found %s' % len(myoutput))
+    #print('Found %s' % len(myoutput))
     if len(myoutput) > 0:
         return(myoutput)
     else:
         return([])
 
 def publish_data(myoutput, sheet_name='NEW'):
+    print('Publishing %s' % sheet_name)
+
     try:
         spreadsheet.create_sheets(sheet_name)
     except:
@@ -145,11 +148,13 @@ for division in get_divisions():
 
     for team in get_teams(division):
         colcount = len(list(schedule.find_one().keys()))
-        output_by_division += [[team] * colcount]  # newline
+        new_line = [''] * 2 +  [team] + [''] * (colcount-3)
+        #print(new_line)
+        output_by_division.append(new_line)  # newline
+
         mygames = get_games(division, team)
         output_by_division += mygames
 
-    print('Publishing %s' % division)
     publish_data(output_by_division, sheet_name=division)
 
 
@@ -161,18 +166,64 @@ for slot in schedule.find(division=None, order_by=['datestamp']):
 publish_data(output_unused, 'UNUSED')
 
 
+# Build analysis
+team_counters=OrderedDict()
+for slot in schedule.all():
+    for team in [slot['home_team'], slot['away_team']]:
+        if team is not None:
 
-# # analysis
-# for division in get_divisions():
-#     for team in get_teams(division):
-#         mygames = get_games(division, team)
+            division_and_team = '%s,%s' % (slot['division'], team)
+            #print(division_and_team)
 
-#         for game in mygames:
-#             print(game)
+            if division_and_team not in team_counters:
+                team_counters[division_and_team] = Counter()
+                # Init
+                for dow in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+                    team_counters[division_and_team][dow] = 0
+                for category in ['total', 'home', 'away', 'turf', 'grass', 'TI', 'SF', 'M-F-TI', 'SS-TI', 'M-F-SF', 'SS-SF']:
+                    team_counters[division_and_team][category] = 0
 
-# for slot in schedule.all():
-#     for team in [slot['home_team'], slot['away_team']]:
-#         if team is not None:
-#             division_and_team = '%s - %s' % (slot['division'], team)
-#             field_types['%s - %s' % (division_and_team, slot['type'])] += 1
+            if team == slot['home_team']:
+                team_counters[division_and_team]['home'] += 1
+            elif team == slot['away_team']:
+                team_counters[division_and_team]['away'] += 1
+
+            team_counters[division_and_team]['total'] += 1
+
+            team_counters[division_and_team][slot['type']] += 1
+            team_counters[division_and_team][slot['location']] += 1
+            team_counters[division_and_team][slot['day_of_week']] += 1
+
+            if slot['day_of_week'] in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']:
+                team_counters[division_and_team][f"M-F-{slot['location']}" ] += 1
+            else:
+                #print(slot)
+                team_counters[division_and_team][f"SS-{slot['location']}" ] += 1
+
+analysis = []
+header = []
+for team in sorted(team_counters.keys()):
+    header.append('division')
+    header.append('team')
+    #print(f"divsion,team,", end='')
+    for value, count in team_counters[team].items():
+        header.append(value)
+        #print(f'{value},', end='')
+    #print('')
+    break
+analysis.append(header)
+
+for team in sorted(team_counters.keys()):
+    row = []
+    row += team.split(',')
+    #print(f"{team},", end='')
+    for value, count in team_counters[team].items():
+        row.append(count)
+        #print(f'{count},', end='')
+    #print('')
+    analysis.append(row)
+
+#print(analysis)
+
+publish_data(analysis, 'NEW Analysis')
 

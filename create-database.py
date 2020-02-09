@@ -173,7 +173,6 @@ blackout_dates = [
     '4/11/2020', '4/12/2020', # Easter (week 11)
     '5/14/2020', # Mothers Day
     '5/23/2020', '5/24/2020', '5/25/2020'  # Memorial Day (week 13)
-
 ]
 # Datetime conversion for blackouts
 blackout_days = [ date_to_datetime(item) for item in blackout_dates ]
