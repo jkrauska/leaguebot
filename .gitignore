@@ -2,3 +2,4 @@
 report*.log
 output.*
 secret.json
+__pycache__*

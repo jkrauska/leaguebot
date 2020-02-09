@@ -129,8 +129,8 @@ spreadsheet = sa.open_by_id('12BDEIWO_85BN6egolnUqIpHQ6yRPyx35VnccSCQD2Ag')
 
 
 # Full data set 
-output=[]
-output_by_division = set_header()
+output = []
+output = set_header()
 
 for slot in schedule.all(order_by=['datestamp']):
     output.append(list(slot.values()))
@@ -159,4 +159,20 @@ output_unused = set_header()
 for slot in schedule.find(division=None, order_by=['datestamp']):
     output_unused.append(list(slot.values()))
 publish_data(output_unused, 'UNUSED')
+
+
+
+# # analysis
+# for division in get_divisions():
+#     for team in get_teams(division):
+#         mygames = get_games(division, team)
+
+#         for game in mygames:
+#             print(game)
+
+# for slot in schedule.all():
+#     for team in [slot['home_team'], slot['away_team']]:
+#         if team is not None:
+#             division_and_team = '%s - %s' % (slot['division'], team)
+#             field_types['%s - %s' % (division_and_team, slot['type'])] += 1
 

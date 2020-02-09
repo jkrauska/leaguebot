@@ -74,7 +74,7 @@ def stuck(division=None, todo=None):
     print(f"Remaining SF Weekday Slots: {remain_weekday_sf}")
     print(f"Remaining SF Slots: {remain_sf}")
     stuck_todo[division]=todo
-    print(stuck_todo)
+    print('STUCK:', stuck_todo)
     #exit(1)
 
 

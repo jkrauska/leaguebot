@@ -8,7 +8,7 @@ Uses datatable library for prettier output.
 import dataset
 import datafreeze
 import csv
-from collections import Counter
+from collections import Counter, defaultdict
 
 db = dataset.connect('sqlite:///little-league.db')
 
@@ -16,7 +16,8 @@ teams = db.get_table('teams')
 fields = db.get_table('fields')
 schedule = db.get_table('schedule')
 
-field_types=Counter()
+
+team_counters=defaultdict()
 
 """
 - Analysis pass per team
@@ -30,10 +31,23 @@ field count
 for slot in schedule.all():
     for team in [slot['home_team'], slot['away_team']]:
         if team is not None:
+            
             division_and_team = '%s - %s' % (slot['division'], team)
-            field_types['%s - %s' % (division_and_team, slot['type'])] += 1
+            #print(division_and_team)
+
+            if division_and_team not in team_counters:
+                team_counters[division_and_team] = Counter()
+
+            team_counters[division_and_team]['total'] += 1
+
+            team_counters[division_and_team][slot['type']] += 1
+            team_counters[division_and_team][slot['location']] += 1
+            team_counters[division_and_team][slot['day_of_week']] += 1
+            team_counters[division_and_team][f"{slot['day_of_week']}-{slot['location']}" ] += 1
 
 
-print(field_types)
-for value, count in sorted(field_types):
-    print(value, count)
+for team in team_counters:
+    print('REPORT', team, '-', end='')
+    for value, count in team_counters[team].items():
+        print(f' {value}={count},', end='')
+    print('')
