@@ -128,32 +128,35 @@ sa = SpreadsheetApp('secret.json')
 spreadsheet = sa.open_by_id('12BDEIWO_85BN6egolnUqIpHQ6yRPyx35VnccSCQD2Ag')
 
 
-# Full data
+# Full data set 
 output=[]
+output_by_division = set_header()
+
 for slot in schedule.all(order_by=['datestamp']):
     output.append(list(slot.values()))
 publish_data(output, 'NEW')
 
 
+
+# By division data 
 for division in get_divisions():
-
-
-    print('='*80)
-    print(division)
-
-
     output_by_division = []
     output_by_division = set_header()
 
     for team in get_teams(division):
         colcount = len(list(schedule.find_one().keys()))
         output_by_division += [[team] * colcount]  # newline
-        print(('-'*80))
-        print(team)
         mygames = get_games(division, team)
-
         output_by_division += mygames
-        print('Size of divsion data: %s' % len(output_by_division))
 
     print('Publishing %s' % division)
     publish_data(output_by_division, sheet_name=division)
+
+
+# unused slots
+output_unused = []
+output_unused = set_header()
+for slot in schedule.find(division=None, order_by=['datestamp']):
+    output_unused.append(list(slot.values()))
+publish_data(output_unused, 'UNUSED')
+
