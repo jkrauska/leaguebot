@@ -143,6 +143,9 @@ publish_data(output, 'NEW')
 
 # By division data 
 for division in get_divisions():
+
+    #if division is not "Upper Farm": continue
+
     output_by_division = []
     output_by_division = set_header()
 
@@ -180,13 +183,18 @@ for slot in schedule.all():
                 # Init
                 for dow in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
                     team_counters[division_and_team][dow] = 0
-                for category in ['total', 'home', 'away', 'turf', 'grass', 'TI', 'SF', 'M-F-TI', 'SS-TI', 'M-F-SF', 'SS-SF']:
+                for category in ['total', 'home', 'away', 'turf', 'grass', 'TI', 'SF', 'M-F-TI', 'SS-TI', 'M-F-SF', 'SS-SF', 'Tepper', 'Ketcham', 'Ft. Scott', 'Kimbell', 'SouthSunset', 'Paul Goode', 'Tepper Home', 'Tepper Away' ]:
                     team_counters[division_and_team][category] = 0
 
             if team == slot['home_team']:
                 team_counters[division_and_team]['home'] += 1
+                if 'Tepper' in slot['field']:
+                    team_counters[division_and_team]['Tepper Home'] += 1
             elif team == slot['away_team']:
                 team_counters[division_and_team]['away'] += 1
+                if 'Tepper' in slot['field']:
+                    team_counters[division_and_team]['Tepper Away'] += 1
+
 
             team_counters[division_and_team]['total'] += 1
 
@@ -199,6 +207,20 @@ for slot in schedule.all():
             else:
                 #print(slot)
                 team_counters[division_and_team][f"SS-{slot['location']}" ] += 1
+
+            if slot['field'] in ['Tepper', 'Ketcham']:
+                team_counters[division_and_team][slot['field']] += 1
+            elif 'Ft. Scott' in slot['field']:
+                team_counters[division_and_team]['Ft. Scott'] += 1
+            elif 'Kimbell' in slot['field']:
+                team_counters[division_and_team]['Kimbell'] += 1
+            elif 'SouthSunset' in slot['field']:
+                team_counters[division_and_team]['SouthSunset'] += 1
+            elif 'Paul Goode' in slot['field']:
+                team_counters[division_and_team]['Paul Goode'] += 1
+            
+
+
 
 analysis = []
 header = []

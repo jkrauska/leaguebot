@@ -47,7 +47,7 @@ division_data = {
         },
     'Rookie': {
         'teams': 8,
-        'games': 13,
+        'games': 12,
         'playoffs': 5
         },
     'Minors AA': {
@@ -301,13 +301,25 @@ add_time_slots(
     end_day='5/30/2020',
     times=[('09:30','12:30'),('12:30', '15:30'),('15:30','18:15')])
 
-# Friday W1
+# Fridays
 add_time_slots(
-    fields=fort_scott,
-    days_of_week=['Friday'],
-    start_day='3/6/2020',
-    end_day='5/15/2020',
-    times=[('17:00','18:30'),('18:30', '20:30')])
+    fields=['Ft. Scott - North'], 
+    days_of_week=['Friday'], 
+    start_day='3/6/2020', 
+    end_day='5/15/2020', 
+    times=[('18:00','20:30')]
+    )
+
+add_time_slots(
+    fields=['Ft. Scott - South'], 
+    days_of_week=['Friday'], 
+    start_day='3/6/2020', 
+    end_day='5/15/2020', 
+    times=[('17:00','18:00'),('18:00', '20:30')]
+    )
+
+
+
 
 ##################
 # Tepper and Ketcham

@@ -30,7 +30,7 @@ fields_4660_all  = [ i['field_name'] for i in fields.find(size='46/60')]
 ##########################################################################################
 ### Reservations
 # 1. RESERVE both Ft. Scotts for Lower Farm Fridays from 5-6:30pm
-for slot in schedule.find(day_of_week='Friday', start='17:00', field=fort_scott):
+for slot in schedule.find(day_of_week='Friday', start='17:00', field='Ft. Scott - South'):
     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Lower Farm")
     data = dict(id=slot['id'], home_team='RESERVED - Practice', division='Lower Farm')
     schedule.update(data, ['id'])
@@ -119,13 +119,21 @@ def schedule_by_week(division=None,
                     day_of_week_prefs=None,
                     field_prefs=None,
                     faceoff_list=None,
-                    weekend_percent=None):
+                    weekend_percent=None,
+                    forced_weekly_minimum=None):
 
-
-    working_faceoffs = get_faceoffs(division=division)
+    if faceoff_list is None:
+        working_faceoffs = get_faceoffs(division=division)
+    else:
+        working_faceoffs = faceoff_list
 
     weeks = end_week - start_week
-    basic_weekly_min = weekly_minimum(division, weeks=weeks)        
+
+
+    if forced_weekly_minimum is None:
+        basic_weekly_min = weekly_minimum(division, weeks=weeks)        
+    else:
+        basic_weekly_min = forced_weekly_minimum
 
 
     weekly_faceoffs = []
@@ -160,7 +168,10 @@ def schedule_by_week(division=None,
                                                 faceoff_list=weekly_faceoffs)
         placed = weekly_min - len(weekly_faceoffs)
         print(f'Found: {placed}   Total Games Left: {len(working_faceoffs) + len(weekly_faceoffs)}')
+
     if len(working_faceoffs) > 0: stuck(division=division, todo=working_faceoffs)
+    return(working_faceoffs)
+
 
 def complex_assign(division=None, 
                     start_week=None, end_week=None, 
@@ -184,14 +195,39 @@ def complex_assign(division=None,
             if slot['home_team'] is not None: 
                 continue  # already booked
 
+            if  slot['field'] == 'Ft. Scott - North' and \
+                    slot['day_of_week'] == 'Friday' and \
+                    slot['start'] == '19:00' and \
+                    ( division == 'Minors AA' or division == 'Minors AAA' ) : 
+                continue # Skip  Minors at late slot in FSN
+
+
             if slot['location'] == "TI" and slot['day_of_week'] == 'Friday': 
-                continue # Skip Fridays at TI
+                continue # Skip Fridays at TI            
 
             if len(faceoff_list) == 0:
                 continue # No more work to be done
 
             # Candidate teams
             (a_team, b_team) = faceoff_list[:1][0]
+
+
+            # # Turf check
+            # a_turf =  sum(1 for _ in schedule.find(home_team=a_team, type='turf', division=division))
+            # a_turf += sum(1 for _ in schedule.find(away_team=a_team, type='turf', division=division))
+
+            # total_turf = sum(1 for _ in schedule.find(type='turf', division=division))
+            # average_turf = 2 * total_turf / len(get_team_list(division))
+
+
+            # print('Turf check for %s  -- total turf = %s   this team = %s vs %s' % (a_team, total_turf, a_turf, average_turf) )
+        
+            # a_turf = 0
+
+            # # Skip condition for poor turf ratios
+            # if a_turf < 2 * average_turf  and division == 'Upper Farm':
+            #     print('skipping slot to find some turf')
+            #     continue
 
             # Conflict checking
             day_of_year = int(slot['day_of_year'])
@@ -224,7 +260,7 @@ def complex_assign(division=None,
             # Balance home/away
             a_home_game_count = sum(1 for _ in schedule.find(home_team=a_team, division=division))
             b_home_game_count = sum(1 for _ in schedule.find(home_team=b_team, division=division))
-            if a_home_game_count > b_home_game_count:
+            if a_home_game_count >= b_home_game_count:
                 swap_teams = True
             else:
                 swap_teams = False
@@ -256,15 +292,21 @@ def complex_assign(division=None,
 # have Upper Farm games on Saturday and Lower Farm games all on Sunday
 schedule_by_week(division='Lower Farm', 
                 start_week=2, end_week=12,
-                day_of_week_prefs=[['Sunday']],
+                day_of_week_prefs=[['Saturday']],
                 field_prefs=[['Ft. Scott - South', 'Paul Goode Practice']]
                 )
 
+# Overriding random to minimize std-deviation
+random.seed(2)
+
+
 schedule_by_week(division='Upper Farm', 
                 start_week=2, end_week=12,
-                day_of_week_prefs=[['Saturday']],
+                day_of_week_prefs=[['Sunday']],
                 field_prefs=[['Ft. Scott - South', 'Paul Goode Practice'], ['Ft. Scott - North']]
                 )
+
+# 'Ft. Scott - South',
 
 # 6. Rookie is supposed to end on May 5/17 but also have playoffs.
 # We should probably plan on pool play with two pools of 4 teams, and the  winner from each pool playing
@@ -278,6 +320,9 @@ schedule_by_week(division='Rookie',
                 day_of_week_prefs=[['Saturday','Sunday'],['Wednesday']],
                 field_prefs=[['Ft. Scott - South', 'Paul Goode Practice'], ['Ft. Scott - North'], fields_4660_sf]
                 )
+
+
+random.seed(2020)
 
 
 # Minors AA
@@ -305,9 +350,17 @@ schedule_by_week(division='Minors AAA',
 # Majors playoffs beginning on May 9.
 
 
+left = schedule_by_week(division='Majors', 
+                start_week=0, end_week=1,
+                day_of_week_prefs=[['Saturday','Sunday'], weekdays, ['Friday']],
+                field_prefs=[tepper_ketcham, ['Ft. Scott - North'], fields_4660_sf],
+                forced_weekly_minimum=8.0
+                )
+
 schedule_by_week(division='Majors', 
+                faceoff_list=left,
                 start_week=2, end_week=11,
-                day_of_week_prefs=[['Saturday','Sunday'], ['Friday'], weekdays],
+                day_of_week_prefs=[['Saturday','Sunday'], weekdays, ['Friday']],
                 field_prefs=[['Ft. Scott - North'], fields_4660_sf, fields_4660_all]
                 )
 

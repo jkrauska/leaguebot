@@ -1,9 +1,10 @@
 #!/bin/bash
 
-set -e
 
 # remove old data file
 rm little-league.db
+
+set -e
 
 # create new data file
 ./create-database.py
