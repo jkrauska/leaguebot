@@ -38,17 +38,20 @@ short_division_names={
 
 
 ##########################################################################################
+##########################################################################################
 ### Reservations
-print('RESERVATION 1 - LF')
+
+
 # 1. RESERVE both Ft. Scotts for Lower Farm Fridays from 5-6:30pm
+print('RESERVATION 1 - LF')
 for slot in schedule.find(day_of_week='Friday', start='17:00', field='Ft. Scott - South'):
     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Lower Farm")
     data = dict(id=slot['id'], home_team='RESERVED - Practice', division='Lower Farm')
     schedule.update(data, ['id'])
 
-print('RESERVATION 2 - Challengers')
 
 # 2. RESERVE Tepper for Challengers on Sundays 3/7-5/31 from 13:30
+print('RESERVATION 2 - Challengers')
 for slot in schedule.find(day_of_week='Sunday', start='13:30', field=['Tepper']):
     if slot['datestamp'] < datetime(2020,3,7) or slot['datestamp'] > datetime(2020,6,1):
         continue
@@ -56,27 +59,18 @@ for slot in schedule.find(day_of_week='Sunday', start='13:30', field=['Tepper'])
     data = dict(id=slot['id'], home_team='RESERVED', division='Challengers')
     schedule.update(data, ['id'])
 
-# 3. RESERVE a slot for Softball on Week 1 on TI.
-# for slot in schedule.find(week='Week 1',  infield='dirt', field=tepper_ketcham, _limit=1):
-#     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball")
-#     data = dict(id=slot['id'], home_team='RESERVED', division='Softball')
-#     schedule.update(data, ['id'])
-
-
-print('RESERVATION 3 - Softball TI')
 
 # Reserve all Saturday AM at 8:30 on Ketcham for Softball
+print('RESERVATION 3 - Softball TI')
 for slot in schedule.find(day_of_week='Saturday', start='08:30', field=['Ketcham']):
     
     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball")
     data = dict(id=slot['id'], home_team='RESERVED', away_team='RESERVED', division='Softball')
     schedule.update(data, ['id'])
 
-print('RESERVATION 4 - Softball FS')
-
-
 
 # 4. RESERVE one game per week at Ft. Scott South on Sunday afternoon.  No other games.
+print('RESERVATION 4 - Softball FS')
 for week in range(2,13):
     for slot in schedule.find(day_of_week='Sunday', 
                 week_number=week, infield='dirt', field=fort_scott,
@@ -85,6 +79,7 @@ for week in range(2,13):
         data = dict(id=slot['id'], home_team='RESERVED', division='Softball')
         schedule.update(data, ['id'])
 
+##########################################################################################
 ##########################################################################################
 stuck_todo={}
 
@@ -243,6 +238,7 @@ def complex_assign(division=None,
 
             # Candidate teams
             (a_team, b_team) = faceoff_list[:1][0]
+            print(f'Trying to place {a_team}, {b_team}')
 
 
             # # Turf check
@@ -290,19 +286,23 @@ def complex_assign(division=None,
                 # Cannot schedule this game one day away from other game (back to back)
                 continue
 
+            ####################################################################################################
             # Balance home/away
 
-            # FIXME: Prior meeting swap
-
-            a_home_game_count = sum(1 for _ in schedule.find(home_team=a_team, division=division))
-            b_home_game_count = sum(1 for _ in schedule.find(home_team=b_team, division=division))
-            if a_home_game_count >= b_home_game_count:
+            # Check for prior same matchup
+            prior_matchups = sum(1 for _ in schedule.find(home_team=a_team, away_team=b_team, division=division))
+            if prior_matchups == 1:
                 swap_teams = True
             else:
-                swap_teams = False
+                # Use counting method
+                a_home_game_count = sum(1 for _ in schedule.find(home_team=a_team, division=division))
+                b_home_game_count = sum(1 for _ in schedule.find(home_team=b_team, division=division))
+                if a_home_game_count >= b_home_game_count and a_home_game_count is not 0:
+                    swap_teams = True
+                else:
+                    swap_teams = False
 
-
-
+            # Apply swap
             try:
                 if swap_teams:
                     (away_team, home_team)=faceoff_list.pop(0)
@@ -313,6 +313,8 @@ def complex_assign(division=None,
                 # No games left to assign
                 continue
 
+            ##########
+            # create unique game ID
             game_id = "%s-%02d" % ( short_division_names[division], division_game_count(division=division))
 
             print(f"    ✅ Assigned {slot['day_of_week']: <10} {slot['datestamp']} @ {slot['field']: <20} to {division: <15} - {home_team: <7} vs {away_team: <7}")
