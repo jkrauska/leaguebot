@@ -5,6 +5,11 @@ import calendar
 from datetime import datetime, timedelta
 import dataset
 
+from string import Template
+
+class DeltaTemplate(Template):
+    delimiter = "%"
+
 # Helper date conversion functions
 def date_to_datetime(date):
     return(datetime.strptime(date, '%m/%d/%Y'))
@@ -171,7 +176,6 @@ field_data = {
 # No games on Memorial Day weekend on Saturday, Sunday or Monday.
 blackout_dates = [
     '4/11/2020', '4/12/2020', # Easter (week 11)
-    '5/14/2020', # Mothers Day
     '5/23/2020', '5/24/2020', '5/25/2020'  # Memorial Day (week 13)
 ]
 # Datetime conversion for blackouts
@@ -184,6 +188,17 @@ def daterange(start_date, end_date):
     end_date = date_to_datetime(end_date)
     for n in range(int ((end_date - start_date).days) +1 ):
         yield start_date + timedelta(n)
+
+
+def strfdelta(tdelta, fmt):
+    d = {"D": tdelta.days}
+    hours, rem = divmod(tdelta.seconds, 3600)
+    minutes, seconds = divmod(rem, 60)
+    d["H"] = '{:02d}'.format(hours)
+    d["M"] = '{:02d}'.format(minutes)
+    d["S"] = '{:02d}'.format(seconds)
+    t = DeltaTemplate(fmt)
+    return t.substitute(**d)
 
 # Create time slot database
 def add_time_slots(
@@ -213,18 +228,33 @@ def add_time_slots(
                     #print(f"{day_of_week} {single_date.date()} {start_time}-{end_time} {field}")
                     (hours, minutes) = start_time.split(':')
                     datestamp = single_date + timedelta(hours=int(hours), minutes=int(minutes))
+
+                    # Game start is 30m after field start
+                    (start_h, start_m) = start_time.split(':')
+                    start_game = timedelta(hours=int(start_h), minutes=int(start_m)) + timedelta(minutes=30)
+                    start_game_pretty = strfdelta(start_game, '%H:%M')
+
+                    # Calculate game length
+                    (end_h, end_m) = end_time.split(':')
+                    game_length = timedelta(hours=int(end_h), minutes=int(end_m)) - start_game
+                    game_length_pretty = strfdelta(game_length, '%H:%M')
+
                     mydata = dict(
                             week=f"{schedule_week}",
                             week_number=week_number,
                             day_of_week=f"{day_of_week}",
                             date=f"{single_date.date()}",
-                            start=f"{start_time}", end=f"{end_time}",
+                            start=f"{start_time}", 
+                            start_game=f"{start_game_pretty}",
+                            end=f"{end_time}",
+                            game_length=f"{game_length_pretty}",
                             datestamp=datestamp,
                             day_of_year=f"{single_date.timetuple().tm_yday}",
                             field=f"{field}",
                             division=None,
                             home_team=None,
-                            away_team=None)
+                            away_team=None,
+                            game_id=None)
                     # adds field data
                     for (key, value) in field_data[field].items():
                         if key is 'field_name': continue  # redundant
@@ -279,11 +309,19 @@ add_time_slots(
     times=[('11:00','13:15'),('13:15', '15:30')])
 # Sunday W10 (last usable)
 add_time_slots(
-    fields=fort_scott,
+    fields=['Ft. Scott - North'],
     days_of_week=['Sunday'],
     start_day='5/3/2020',
     end_day='5/30/2020',
-    times=[('09:30','12:30'),('12:30', '15:30')])
+    times=[('09:30','12:30'),('12:30','15:30')])
+
+add_time_slots(
+    fields=['Ft. Scott - South'],
+    days_of_week=['Sunday'],
+    start_day='5/3/2020',
+    end_day='5/30/2020',
+    times=[('09:30','11:30'),('11:30', '13:30'),('13:30','15:30')])
+
 
 # Saturdays W1-W5
 add_time_slots(

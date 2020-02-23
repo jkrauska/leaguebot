@@ -27,13 +27,26 @@ fields_4660_sf  = [ i['field_name'] for i in fields.find(size='46/60', location=
 fields_4660_all  = [ i['field_name'] for i in fields.find(size='46/60')]
 
 
+short_division_names={
+    'Upper Farm': 'UF',
+    'Lower Farm': 'LF',
+    'Rookie': 'RK',
+    'Majors': 'MAJ',
+    'Minors AA': 'AA',
+    'Minors AAA': 'AAA'
+}
+
+
 ##########################################################################################
 ### Reservations
+print('RESERVATION 1 - LF')
 # 1. RESERVE both Ft. Scotts for Lower Farm Fridays from 5-6:30pm
 for slot in schedule.find(day_of_week='Friday', start='17:00', field='Ft. Scott - South'):
     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Lower Farm")
     data = dict(id=slot['id'], home_team='RESERVED - Practice', division='Lower Farm')
     schedule.update(data, ['id'])
+
+print('RESERVATION 2 - Challengers')
 
 # 2. RESERVE Tepper for Challengers on Sundays 3/7-5/31 from 13:30
 for slot in schedule.find(day_of_week='Sunday', start='13:30', field=['Tepper']):
@@ -44,13 +57,27 @@ for slot in schedule.find(day_of_week='Sunday', start='13:30', field=['Tepper'])
     schedule.update(data, ['id'])
 
 # 3. RESERVE a slot for Softball on Week 1 on TI.
-for slot in schedule.find(week='Week 1',  infield='dirt', field=tepper_ketcham, _limit=1):
+# for slot in schedule.find(week='Week 1',  infield='dirt', field=tepper_ketcham, _limit=1):
+#     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball")
+#     data = dict(id=slot['id'], home_team='RESERVED', division='Softball')
+#     schedule.update(data, ['id'])
+
+
+print('RESERVATION 3 - Softball TI')
+
+# Reserve all Saturday AM at 8:30 on Ketcham for Softball
+for slot in schedule.find(day_of_week='Saturday', start='08:30', field=['Ketcham']):
+    
     print(f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball")
-    data = dict(id=slot['id'], home_team='RESERVED', division='Softball')
+    data = dict(id=slot['id'], home_team='RESERVED', away_team='RESERVED', division='Softball')
     schedule.update(data, ['id'])
 
+print('RESERVATION 4 - Softball FS')
+
+
+
 # 4. RESERVE one game per week at Ft. Scott South on Sunday afternoon.  No other games.
-for week in range(2,11):
+for week in range(2,13):
     for slot in schedule.find(day_of_week='Sunday', 
                 week_number=week, infield='dirt', field=fort_scott,
                 order_by=['-datestamp'], _limit=1):
@@ -172,6 +199,12 @@ def schedule_by_week(division=None,
     if len(working_faceoffs) > 0: stuck(division=division, todo=working_faceoffs)
     return(working_faceoffs)
 
+def division_game_count(division):
+    current_games_for_division=list(schedule.find(division=division, away_team={'not': None}))
+    #print(current_games_for_division)
+
+    return((len(current_games_for_division))+1)
+
 
 def complex_assign(division=None, 
                     start_week=None, end_week=None, 
@@ -258,6 +291,9 @@ def complex_assign(division=None,
                 continue
 
             # Balance home/away
+
+            # FIXME: Prior meeting swap
+
             a_home_game_count = sum(1 for _ in schedule.find(home_team=a_team, division=division))
             b_home_game_count = sum(1 for _ in schedule.find(home_team=b_team, division=division))
             if a_home_game_count >= b_home_game_count:
@@ -277,9 +313,11 @@ def complex_assign(division=None,
                 # No games left to assign
                 continue
 
+            game_id = "%s-%02d" % ( short_division_names[division], division_game_count(division=division))
+
             print(f"    ✅ Assigned {slot['day_of_week']: <10} {slot['datestamp']} @ {slot['field']: <20} to {division: <15} - {home_team: <7} vs {away_team: <7}")
             data = dict(id=slot['id'], home_team=home_team,
-                    away_team=away_team, division=division)
+                    away_team=away_team, division=division, game_id=game_id)
             schedule.update(data, ['id'])
 
 

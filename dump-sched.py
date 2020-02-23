@@ -107,7 +107,7 @@ def get_games(division, team):
     else:
         return([])
 
-def publish_data(myoutput, sheet_name='NEW'):
+def publish_data(myoutput, sheet_name='FULL'):
     print('Publishing %s' % sheet_name)
 
     try:
@@ -137,7 +137,7 @@ output = set_header()
 
 for slot in schedule.all(order_by=['datestamp']):
     output.append(list(slot.values()))
-publish_data(output, 'NEW')
+publish_data(output, 'FULL')
 
 
 
