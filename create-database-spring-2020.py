@@ -20,39 +20,80 @@ def datestamp_to_datetime(datestamp):
 # League Data
 
 # Week name to date ranges (weeks start on Saturdays)
-week_split_data = {}
-start_date = date_to_datetime('4/10/2021')
-for week in range(1,9):
-    week_split_data[f"Week {week}"] = start_date + timedelta(7) * (week - 1)
-
-
+week_split_data = {
+    'Week 1': date_to_datetime('2/28/2020'),
+    'Week 2': date_to_datetime('3/7/2020'),
+    'Week 3': date_to_datetime('3/14/2020'),
+    'Week 4': date_to_datetime('3/21/2020'),
+    'Week 5': date_to_datetime('3/28/2020'),
+    'Week 6': date_to_datetime('4/4/2020'),
+    'Week 7': date_to_datetime('4/11/2020'),
+    'Week 8': date_to_datetime('4/18/2020'),
+    'Week 9': date_to_datetime('4/25/2020'),
+    'Week 10': date_to_datetime('5/2/2020'),
+    'Week 11': date_to_datetime('5/9/2020'),
+    'Week 12': date_to_datetime('5/16/2020'),
+    'Week 13': date_to_datetime('5/23/2020'),
+    # Memorial day is Monday 5/25/2020
+    'Week 14': date_to_datetime('5/30/2020')
+}
 
 division_data = {
-    'Farm': {
+    'Lower Farm': {
+        'teams': 4,
+        'games': 10,
+        'playoffs': None
+        },
+    'Upper Farm': {
         'teams': 6,
-        'games': 7,
+        # Dropped from 11 to 10
+        'games': 10,
         'playoffs': None
         },
     'Rookie': {
-        'teams': 6,
-        'games': 7,
-        'playoffs': None
-        },
-    'Minors': {
-        'teams': 6,
-        'games': 11,
-        'playoffs': None
-        },
-    'Majors': {
         'teams': 8,
-        'games': 14,
-        'playoffs': None
-        },
-    'Softball': {
-        'teams': 1,
-        'games': 6,
+        'games': 12,
         'playoffs': 5
         },
+    'Minors AA': {
+        'teams': 8,
+        'games': 14,
+        'playoffs': 5
+        },
+    'Minors AAA': {
+        'teams': 6,
+        'games': 14,
+        'playoffs': 5
+        },
+    'Majors': {
+        'teams': 10,
+        'games': 16,
+        'playoffs': 5
+        },
+    'Softball': {
+        'teams': 4,
+        'games': 13,
+        'playoffs': 5
+        },
+    'Challenger': {
+        'teams': 3,
+        'games': 11,
+        'playoffs': None,
+        'fixed_games': 11
+        },
+    # JR and SR at Paul Goode - Handled by T.Tullis
+    # 'Juniors': {
+    #     'teams': 6,
+    #     'games': 14,
+    #     'playoffs': 5,
+    #     'fields': '60-90'
+    #     },
+    # 'Seniors': {
+    #     'teams': 3,
+    #     'games': 14,
+    #     'playoffs': 2,
+    #     'fields': '60-90'
+    #     },
 }
 
 field_data = {
@@ -80,30 +121,30 @@ field_data = {
         'type': 'grass',
         'infield': 'dirt'
     },
-    # 'SouthSunset #1 North': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'turf',
-    #     'infield': 'turf'
-    # },
-    # 'SouthSunset #2 South': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'turf',
-    #     'infield': 'turf'
-    # },
-    # 'Kimbell #1 NW': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'turf',
-    #     'infield': 'turf'
-    # },
-    # 'Kimbell #2 SE': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'turf',
-    #     'infield': 'turf'
-    # },
+    'SouthSunset #1 North': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'turf',
+        'infield': 'turf'
+    },
+    'SouthSunset #2 South': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'turf',
+        'infield': 'turf'
+    },
+    'Kimbell #1 NW': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'turf',
+        'infield': 'turf'
+    },
+    'Kimbell #2 SE': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'turf',
+        'infield': 'turf'
+    },
     'Paul Goode Practice': {
         'location': 'SF',
         'size': '46/60',
@@ -116,27 +157,27 @@ field_data = {
         'type': 'turf',
         'infield': 'turf'
     },        
-    # 'McCoppin': {
-    #     'location': 'SF',
-    #     'size': '60/90',
-    #     'type': 'grass',
-    #     'infield': 'grass'
-    # },
-    # 'Sweeney': {
-    #     'location': 'SF',
-    #     'size': '60/90',
-    #     'type': 'grass',
-    #     'infield': 'grass'
-    # },
+    'McCoppin': {
+        'location': 'SF',
+        'size': '60/90',
+        'type': 'grass',
+        'infield': 'grass'
+    },
+    'Sweeney': {
+        'location': 'SF',
+        'size': '60/90',
+        'type': 'grass',
+        'infield': 'grass'
+    },
 }
 
 
 # No games Easter weekend on Saturday or Sunday.
 # No games on Memorial Day weekend on Saturday, Sunday or Monday.
-blackout_dates = []
-#     '4/11/2020', '4/12/2020', # Easter (week 11)
-#     '5/23/2020', '5/24/2020', '5/25/2020'  # Memorial Day (week 13)
-# ]
+blackout_dates = [
+    '4/11/2020', '4/12/2020', # Easter (week 11)
+    '5/23/2020', '5/24/2020', '5/25/2020'  # Memorial Day (week 13)
+]
 # Datetime conversion for blackouts
 blackout_days = [ date_to_datetime(item) for item in blackout_dates ]
 
@@ -181,7 +222,7 @@ def add_time_slots(
                     schedule_week=week
                     week_number=schedule_week.split(' ')[1]
 
-            # Apply for multilple fields
+            # Apply for multikple fields
             for field in fields:
                 for (start_time, end_time) in times:
                     #print(f"{day_of_week} {single_date.date()} {start_time}-{end_time} {field}")
@@ -216,7 +257,7 @@ def add_time_slots(
                             game_id=None)
                     # adds field data
                     for (key, value) in field_data[field].items():
-                        if key == 'field_name': continue  # redundant
+                        if key is 'field_name': continue  # redundant
                         mydata[key] = value
 
                     table.insert(mydata)
@@ -244,34 +285,77 @@ table = db['schedule']
 ### Ft. Scott
 # Same schedule for North and South
 fort_scott=['Ft. Scott - North', 'Ft. Scott - South']
+# Sundays  W1-W4
+add_time_slots(
+    fields=fort_scott,
+    days_of_week=['Sunday'],
+    start_day='3/1/2020',
+    end_day='3/22/2020',
+    times=[('11:00','13:15'),('13:15', '15:30')])
+# Sundays W5-W8
+add_time_slots(
+    fields=fort_scott,
+    days_of_week=['Sunday'],
+    start_day='3/29/2020',
+    end_day='4/19/2020',
+    times=[('12:30','14:45'),('14:45', '17:00')])
 
-# Sundays  2-slot spots
+# Sunday W9
 add_time_slots(
     fields=fort_scott,
     days_of_week=['Sunday'],
-    start_day='4/11/2021',
-    end_day='5/23/2021',
-    times=[('12:30','14:00'),('14:00', '15:30')])
+    start_day='4/26/2020',
+    end_day='4/26/2020',
+    times=[('11:00','13:15'),('13:15', '15:30')])
+# Sunday W10 (last usable)
+add_time_slots(
+    fields=['Ft. Scott - North'],
+    days_of_week=['Sunday'],
+    start_day='5/3/2020',
+    end_day='5/30/2020',
+    times=[('09:30','12:30'),('12:30','15:30')])
 
-# Sundays 3-slot spots
+add_time_slots(
+    fields=['Ft. Scott - South'],
+    days_of_week=['Sunday'],
+    start_day='5/3/2020',
+    end_day='5/30/2020',
+    times=[('09:30','11:30'),('11:30', '13:30'),('13:30','15:30')])
+
+
+# Saturdays W1-W5
 add_time_slots(
     fields=fort_scott,
-    days_of_week=['Sunday'],
-    start_day='4/18/2021',
-    end_day='4/18/2021',
-    times=[('15:30','17:00')])
+    days_of_week=['Saturday'],
+    start_day='3/7/2020',
+    end_day='3/28/2020',
+    times=[('11:00','13:15'),('13:15', '15:30')])
+
+# Saturdays W6-W14
 add_time_slots(
     fields=fort_scott,
-    days_of_week=['Sunday'],
-    start_day='5/2/2021',
-    end_day='5/2/2021',
-    times=[('15:30','17:00')])
+    days_of_week=['Saturday'],
+    start_day='4/4/2020',
+    end_day='5/30/2020',
+    times=[('09:30','12:30'),('12:30', '15:30'),('15:30','18:15')])
+
+# Fridays
 add_time_slots(
-    fields=fort_scott,
-    days_of_week=['Sunday'],
-    start_day='5/16/2021',
-    end_day='5/16/2021',
-    times=[('15:30','17:00')])    
+    fields=['Ft. Scott - North'], 
+    days_of_week=['Friday'], 
+    start_day='3/6/2020', 
+    end_day='5/15/2020', 
+    times=[('18:00','20:30')]
+    )
+
+add_time_slots(
+    fields=['Ft. Scott - South'], 
+    days_of_week=['Friday'], 
+    start_day='3/6/2020', 
+    end_day='5/15/2020', 
+    times=[('17:00','18:00'),('18:00', '20:30')]
+    )
+
 
 
 
@@ -282,35 +366,106 @@ tepper_ketcham = ['Tepper', 'Ketcham']
 # Saturday/Sunday
 add_time_slots(
     fields=tepper_ketcham,
-    days_of_week=['Saturday'],
-    start_day='4/10/2021',
-    end_day='5/29/2021',
-    times=[('09:00','11:30'),('11:30', '14:00'),('14:00', '16:30'),('16:30', '19:00')])
-
-add_time_slots(
-    fields=tepper_ketcham,
-    days_of_week=['Sunday'],
-    start_day='4/10/2021',
-    end_day='5/29/2021',
-    times=[('09:00','11:30'),('11:30', '14:00'),('14:00', '16:30')])
-
+    days_of_week=['Saturday','Sunday'],
+    start_day='2/28/2020',
+    end_day='5/31/2020',
+    times=[('08:30','11:00'),('11:00', '13:30'),('13:30', '16:00'),('16:00', '18:30')])
 # Monday-Friday W2-W4
 add_time_slots(
     fields=tepper_ketcham,
     days_of_week=['Monday','Tuesday','Wednesday', 'Thursday', 'Friday'],
-    start_day='4/12/2021',
-    end_day='5/29/2021',
+    start_day='3/9/2020',
+    end_day='3/29/2020',
+    times=[('16:30','19:15')])
+# Monday-Friday W2-W4
+add_time_slots(
+    fields=tepper_ketcham,
+    days_of_week=['Monday','Tuesday','Wednesday', 'Thursday', 'Friday'],
+    start_day='3/30/2020',
+    end_day='5/25/2020',
     times=[('17:00','19:30')])
 
+##################
+# Sunset
+add_time_slots(
+    fields=['SouthSunset #1 North'],
+    days_of_week=['Friday'],
+    start_day='3/6/2020',
+    end_day='5/29/2020',
+    times=[('17:30','20:00')])
+
+add_time_slots(
+    fields=['SouthSunset #2 South'],
+    days_of_week=['Tuesday', 'Thursday', 'Friday'],
+    start_day='3/3/2020',
+    end_day='5/29/2020',
+    times=[('17:30','20:00')])
+
+##################
+# Kimbell
+add_time_slots(
+    fields=['Kimbell #1 NW', 'Kimbell #2 SE'],
+    days_of_week=['Wednesday'],
+    start_day='3/4/2020',
+    end_day='5/29/2020',
+    times=[('17:30','20:00')])
 
 ##################
 # Paul Goode
 add_time_slots(
     fields=['Paul Goode Practice'],
     days_of_week=['Saturday'],
-    start_day='4/10/2021',
-    end_day='5/29/2021',
-    times=[('12:00','14:00')])
+    start_day='3/13/2020',
+    end_day='5/30/2020',
+    times=[('11:00','13:00')])
+
+add_time_slots(
+    fields=['Paul Goode Practice'],
+    days_of_week=['Sunday'],
+    start_day='3/8/2020',
+    end_day='3/29/2020',
+    times=[('13:00','15:00')])
+
+add_time_slots(
+    fields=['Paul Goode Practice'],
+    days_of_week=['Sunday'],
+    start_day='4/5/2020',
+    end_day='4/13/2020',
+    times=[('12:00','15:00')])
+
+add_time_slots(
+    fields=['Paul Goode Practice'],
+    days_of_week=['Sunday'],
+    start_day='4/19/2020',
+    end_day='5/31/2020',
+    times=[('13:00','15:00')])
+
+
+##################
+# BIG FIELDS
+
+# # McCoppin (Challenger)
+# add_time_slots(
+#     fields=['McCoppin'],
+#     days_of_week=['Sunday'],
+#     start_day='3/8/2020',
+#     end_day='5/17/2020',
+#     times=[('12:00','15:00')])
+
+# # Sweeney (Juniors)  No May 23
+# add_time_slots(
+#     fields=['Sweeney'],
+#     days_of_week=['Saturday'],
+#     start_day='3/7/2020',
+#     end_day='5/22/2020',
+#     times=[('9:00','12:00')])
+
+# add_time_slots(
+#     fields=['Sweeney'],
+#     days_of_week=['Saturday'],
+#     start_day='5/30/2020',
+#     end_day='5/30/2020',
+#     times=[('9:00','12:00')])
 
 
 # Coaches who coach in both divisions -- check for conflicts?

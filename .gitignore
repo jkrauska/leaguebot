@@ -3,3 +3,4 @@ report*.log
 output.*
 secret.json
 __pycache__*
+.DS_Store

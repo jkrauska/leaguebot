@@ -128,15 +128,19 @@ def publish_data(myoutput, sheet_name='FULL'):
 
 # Google Sheet
 sa = SpreadsheetApp('secret.json')
-spreadsheet = sa.open_by_id('12BDEIWO_85BN6egolnUqIpHQ6yRPyx35VnccSCQD2Ag')
-
+spreadsheet = sa.open_by_id('19oc67iPOkwvxSbDuNwXyK2OPezt2ZiSO5-K7QAc5TJM')
+                            #  19oc67iPOkwvxSbDuNwXyK2OPezt2ZiSO5-K7QAc5TJM/
 
 # Full data set 
 output = []
 output = set_header()
 
+count=1
 for slot in schedule.all(order_by=['datestamp']):
+    #print(count, slot)
+    count+=1
     output.append(list(slot.values()))
+output.append(['XXX']*20)
 publish_data(output, 'FULL')
 
 
@@ -157,7 +161,7 @@ for division in get_divisions():
 
         mygames = get_games(division, team)
         output_by_division += mygames
-
+    output_by_division.append(['XXXX'] * colcount)
     publish_data(output_by_division, sheet_name=division)
 
 
@@ -166,6 +170,9 @@ output_unused = []
 output_unused = set_header()
 for slot in schedule.find(division=None, order_by=['datestamp']):
     output_unused.append(list(slot.values()))
+
+output_unused.append(['XXXX'] * colcount)
+
 publish_data(output_unused, 'UNUSED')
 
 
