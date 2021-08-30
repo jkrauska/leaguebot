@@ -148,14 +148,12 @@ publish_data(output, 'FULL')
 # By division data 
 for division in get_divisions():
 
-    #if division is not "Upper Farm": continue
-
     output_by_division = []
     output_by_division = set_header()
 
     for team in get_teams(division):
         colcount = len(list(schedule.find_one().keys()))
-        new_line = [''] * 2 +  [team] + [''] * (colcount-3)
+        new_line = [''] * 1 +  [team] + [''] * (colcount-2)
         #print(new_line)
         output_by_division.append(new_line)  # newline
 

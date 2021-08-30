@@ -9,6 +9,7 @@ import math
 import random
 import sys
 import time
+import statistics
 
 try:
     myrand = sys.argv[1]
@@ -38,29 +39,34 @@ fields_4660_all = [i["field_name"] for i in fields.find(size="46/60")]
 
 
 short_division_names = {
-    "Farm": "FM",
+    "Farm - Lower": "FML",
+    "Farm - Upper": "FMU",
     "Rookie": "RK",
+    "Minors AA": "AA",
+    "Minors AAA": "AAA",
     "Majors": "MAJ",
-    "Minors": "MIN",
-}
+    "Juniors": "JRS",
+    "Seniors": "SRS",
+    "Softball": "SFT",
 
+}
 
 ##########################################################################################
 ##########################################################################################
 ### Reservations
 
-print(
-    "RESERVATION 2021-1 Softball should be assigned 1 slot at Ketcham on Sundays at 2 pm."
-)
-for slot in schedule.find(day_of_week="Sunday", start="14:00", field=["Ketcham"]):
+# print(
+#     "RESERVATION 2021-1 Softball should be assigned 1 slot at Ketcham on Sundays at 2 pm."
+# )
+# for slot in schedule.find(day_of_week="Sunday", start="14:00", field=["Ketcham"]):
 
-    print(
-        f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball"
-    )
-    data = dict(
-        id=slot["id"], home_team="RESERVED", away_team="RESERVED", division="Softball"
-    )
-    schedule.update(data, ["id"])
+#     print(
+#         f"Reserved {slot['day_of_week']}\t{slot['datestamp']} \t{slot['field']}\tto Softball"
+#     )
+#     data = dict(
+#         id=slot["id"], home_team="RESERVED", away_team="RESERVED", division="Softball"
+#     )
+#     schedule.update(data, ["id"])
 
 # Farm has one game per weekend only and it must be on Ft. Scott on Sunday.
 # print('RESERVATION 4 - Farm Sundays')
@@ -132,10 +138,10 @@ def get_faceoffs(division):
     total_games = get_total_games(division)
 
     faceoff_list = faceoffs.faceoffs_repeated(team_list, total_games)
-    print("=" * 80)
-    print(
-        f"Division: {division}\n\tTeams: {len(team_list)}\n\tTotal Games: {total_games} -- {myrand}"
-    )
+    # print("=" * 80)
+    # print(
+    #     f"Division: {division}\n\tTeams: {len(team_list)}\n\tTotal Games: {total_games} -- {myrand}"
+    # )
 
     return faceoff_list
 
@@ -178,7 +184,7 @@ def schedule_by_week(
     else:
         working_faceoffs = faceoff_list
 
-    print(f"    Working faceoffs: {working_faceoffs}")
+    #print(f"    Working faceoffs: {working_faceoffs}")
 
     # # Chosse a random spot in the faceoff list:
     # cut_spot = random.randint(0, len(working_faceoffs))
@@ -196,7 +202,7 @@ def schedule_by_week(
     weekly_faceoffs = []
 
     for week in range(start_week, end_week + 1):
-        print("-" * 80)
+        #print("-" * 80)
 
         # BEWARE - Clever thing going on here --- randomly choose more slots to fill per week depending on ratio.
         # eg, if you need to fille 4.5 games/week, half of the time pick 4, half of the time pick 5
@@ -209,9 +215,9 @@ def schedule_by_week(
             print("OVERRIDE GAMES PER WEEK PATTERN")
             weekly_min = games_per_week_pattern[week - 1]
 
-        print(
-            f"Week {week} - trying find {weekly_min} spots for {division} - based on {basic_weekly_min}"
-        )
+        # print(
+        #     f"Week {week} - trying to find {weekly_min} spots for {division} - based on {basic_weekly_min}"
+        # )
 
         # Get new weekly assignments if we don't have them
         if len(weekly_faceoffs) < weekly_min:
@@ -233,9 +239,9 @@ def schedule_by_week(
                         faceoff_list=weekly_faceoffs,
                     )
         placed = weekly_min - len(weekly_faceoffs)
-        print(
-            f"Found: {placed}   Total Games Left: {len(working_faceoffs) + len(weekly_faceoffs)} -- {myrand}"
-        )
+        # print(
+        #     f"Found: {placed}   Total Games Left: {len(working_faceoffs) + len(weekly_faceoffs)} -- {myrand}"
+        # )
 
     if len(working_faceoffs) + len(weekly_faceoffs) > 0:
         stuck(division=division, todo=working_faceoffs)
@@ -338,13 +344,14 @@ def complex_assign(
     weekend_percent=None,
 ):
 
-    print(f"  Checking for slots on {day_of_week} at {fields}")
+    #print(f"  Checking for slots on {day_of_week} at {fields}")
 
     for week in range(start_week, end_week + 1):
         matching_slots = list(
             schedule.find(day_of_week=day_of_week, week_number=week, field=fields, home_team=None)
         )
-        print(f"  {len(matching_slots)} open slots found")
+        #print(f"  {len(matching_slots)} open slots found")
+        #print(f"{matching_slots}")
 
         # Shuffle the usable slots (more fair results)
         random.shuffle(matching_slots)
@@ -360,6 +367,46 @@ def complex_assign(
             #         ( division == 'Minors AA' or division == 'Minors AAA' ) :
             #     continue # Skip  Minors at late slot in FSN
 
+            # Ugly -- exclusions 
+            if division == 'Rookie':
+                if slot['field'] == "Rossi Park #1":
+                    if slot['start'] != '12:00':
+                        continue
+                elif slot['field'] == 'Balboa Park #2 - Near Playground' and \
+                    slot['start'] == '15:00':
+                    continue
+
+            elif division == 'Minors AA':
+                if slot['field'] == "Rossi Park #1" and slot['start'] != '09:00':
+                        continue
+                elif slot['field'] ==  "Balboa Park #1 - Near Skatepark" and slot['start'] != '12:00':
+                    continue
+                elif slot['field'] ==  "Balboa Park #2 - Near Playground" and slot['start'] != '15:00':
+                    continue
+                elif slot['field'] ==  "Ketcham" and slot['start'] != '12:00':
+                    continue
+
+            elif division == 'Minors AAA':
+                if slot['field'] == "Rossi Park #1" and slot['start'] != '15:00':
+                    continue 
+                elif slot['field'] ==  "Balboa Park #1 - Near Skatepark" and slot['start'] == '12:00':
+                    continue
+                elif slot['field'] ==  "Tepper" and slot['start'] != '12:00':
+                    continue
+
+            elif division == 'Majors':
+                if slot['field'] ==  "Tepper" and slot['start'] == '12:00':
+                    continue
+                elif slot['field'] ==  "Ketcham" and slot['start'] != '15:00':
+                    continue
+
+            elif division == 'Majors':
+                if slot['field'] ==  "Ketcham" and slot['start'] != '12:00':
+                    continue
+
+
+
+
             if slot["location"] == "TI" and slot["day_of_week"] == "Friday":
                 continue  # Skip Fridays at TI
 
@@ -368,7 +415,7 @@ def complex_assign(
 
             # Candidate teams
             (a_team, b_team) = faceoff_list[:1][0]
-            print(f"Trying to place a game between {a_team} and {b_team}")
+            #print(f"Trying to place a game between {a_team} and {b_team}")
 
             # Conflict checking
             day_of_year = int(slot["day_of_year"])
@@ -425,9 +472,9 @@ def complex_assign(
                     division_game_count(division=division),
                 )
 
-                print(
-                    f"    ✅ Assigned {slot['day_of_week']: <10} {slot['datestamp']} @ {slot['field']: <20} to {division: <15} - {home_team: <7} vs {away_team: <7}"
-                )
+                # print(
+                #     f"    ✅ Assigned {slot['day_of_week']: <10} {slot['datestamp']} @ {slot['field']: <20} to {division: <15} - {home_team: <7} vs {away_team: <7}"
+                # )
                 data = dict(
                     id=slot["id"],
                     home_team=home_team,
@@ -437,7 +484,8 @@ def complex_assign(
                 )
                 schedule.update(data, ["id"])
         else:
-            print("Unable to schedule.")
+            pass
+            #print("Unable to schedule any more.")
 
     return faceoff_list
 
@@ -470,65 +518,304 @@ def count_tepper(team=None, division=None, field="Tepper"):
     return len(homes) + len(aways)
 
 
+
+def count_ti(division=None, team=None):
+    total = 0
+    for field in ['Tepper', "Ketcham"]:
+        # print(f'{field} - {team} - {division}')
+        homes = list(
+            schedule.find(division=division, 
+                home_team=team, field=field)
+        )
+        # print(f'H: {len(homes)} -- {homes}')
+        total += len(homes)
+        aways = list(
+            schedule.find(division=division, 
+                away_team=team, field=field)
+        )
+        # print(f'A: {len(aways)} --  {aways}')
+
+        total += len(aways)
+        #print(total)
+    return total
+
+def count_foo(division=None, team=None, foo=[]):
+    total = 0
+    for field in foo:
+        homes = list(
+            schedule.find(division=division, 
+                home_team=team, field=field)
+        )
+        total += len(homes)
+        aways = list(
+            schedule.find(division=division, 
+                away_team=team, field=field)
+        )
+
+        total += len(aways)
+    return total
+
+
+
+
 ##########################################################################################
 ### Main schedule:
 
 # Farm
 schedule_by_week(
-    division="Farm",
+    division="Farm - Lower",
     start_week=1,
-    end_week=8,
+    end_week=9,
     day_of_week_prefs=[["Sunday"]],
     forced_weekly_minimum=3,
     # field_prefs=[['Ft. Scott - South']]
-    field_prefs=[["Ft. Scott - South"], ["Ft. Scott - North"]],
+    field_prefs=[["Paul Goode Practice"]]
 )
 
-random.seed(124)
-# Rookies
+
+schedule_by_week(
+    division="Farm - Upper",
+    start_week=1,
+    end_week=9,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=3,
+    field_prefs=[["Julias Kahn along Presidio Wall"]]
+)
+
 schedule_by_week(
     division="Rookie",
     start_week=1,
-    end_week=8,
-    day_of_week_prefs=[["Saturday", "Sunday"]],
-    field_prefs=[
-        [
-            "Paul Goode Practice",
-            "Paul Goode Practice",
-            "Ft. Scott - South",
-            "Ft. Scott - North",
-        ],
-        "Tepper",
-    ],
+    end_week=9,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=3,
+    field_prefs=[["Balboa Park #2 - Near Playground", "Rossi Park #1"]]
 )
 
 
+random.seed('134')
+schedule_by_week(
+    division="Minors AA",
+    start_week=1,
+    end_week=7,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=4,
+    field_prefs=[["Balboa Park #1 - Near Skatepark", "Balboa Park #2 - Near Playground", "Rossi Park #1", "Ketcham"]]
+)
+
+random.seed('337')
+schedule_by_week(
+    division="Minors AAA",
+    start_week=1,
+    end_week=7,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=4,
+    field_prefs=[["Balboa Park #1 - Near Skatepark", "Rossi Park #1", "Tepper"]]
+)
+
+random.seed('403')
+#random.seed(myrand)
+schedule_by_week(
+    division="Majors",
+    start_week=1,
+    end_week=7,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=5,
+    field_prefs=[[
+        'West Sunset #3',
+         "Tepper", 
+         "Ketcham"]]
+)
+
+# div='Majors'
+# measure_counts = {}
+# for team in get_team_list(div):
+#     mycount = count_foo(division=div, team=team, foo=['Tepper', "Ketcham"])
+#     #print(f"Team {team}, Count {mycount}")
+#     measure_counts[team] = mycount
+
+# values = measure_counts.values()
+# deviation = round(statistics.stdev(values),2)
+
+# for team in measure_counts:
+#     if measure_counts[team] > 4:
+#         print(f'RAND:{myrand} DEV:{deviation} - Team {team} has {measure_counts[team]} -- we can do better {list(values)}')
+#         sys.exit(1)
+#     elif measure_counts[team] == 0:
+#         print(f'RAND:{myrand} - Team {team} has {measure_counts[team]} -- we can do better {list(values)} ')
+#         sys.exit(1)
+
+
+random.seed('374')
+schedule_by_week(
+    division="Juniors",
+    start_week=1,
+    end_week=7,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=4,
+    field_prefs=[[
+        'West Sunset #2',
+         "Paul Goode Main",]]
+)
+
+
+
+
+
+
+# print(f'RAND: {myrand} DEV:{deviation} - {values}')
+# print(f'happy {myrand}')
+#sys.exit(0)
+
+schedule_by_week(
+    division="Seniors",
+    start_week=1,
+    end_week=7,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=2,
+    field_prefs=[[
+        'West Sunset #1']]
+)
+
+schedule_by_week(
+    division="Softball",
+    start_week=1,
+    end_week=9,
+    day_of_week_prefs=[["Sunday"]],
+    forced_weekly_minimum=2,
+    field_prefs=[[
+        'Ketcham']]
+)
+
+
+
+
+
 def swap_ids(fromid=None, toid=None):
-    swapper = schedule.find_one(id=fromid)
+    swap_from = schedule.find_one(game_id=fromid)
+    swap_to = schedule.find_one(game_id=toid)
+
+
+    h1 = swap_from['home_team']
+    h2 = swap_to['home_team']
+
+    a1 = swap_from['away_team']
+    a2 = swap_to['away_team']
+
     schedule.update(
         dict(
-            id=toid,
-            home_team=swapper["home_team"],
-            away_team=swapper["away_team"],
-            game_id=swapper["game_id"],
-            division=swapper["division"],
+            id=swap_to['id'],
+            home_team=h1,
+            away_team=a1,
         ),
         ["id"],
     )
+
     schedule.update(
         dict(
-            id=fromid,
-            home_team=None,
-            away_team=None,
-            game_id=None,
-            division=None,
+            id=swap_from['id'],
+            home_team=h2,
+            away_team=a2,
         ),
         ["id"],
     )
 
 
-swap_ids(fromid=22, toid=131)
 
+# 2021 swaps
+#swap_ids()
+
+swap_ids(fromid='FML-04', toid='FML-05')
+swap_ids(fromid='FML-08', toid='FML-07')
+swap_ids(fromid='FML-10', toid='FML-11')
+swap_ids(fromid='FML-13', toid='FML-15')
+swap_ids(fromid='FML-16', toid='FML-17')
+swap_ids(fromid='FML-23', toid='FML-24')
+swap_ids(fromid='FML-25', toid='FML-27')
+
+
+swap_ids(fromid='FMU-01', toid='FMU-02')
+
+swap_ids(fromid='RK-19', toid='RK-21')
+swap_ids(fromid='RK-22', toid='RK-24')
+
+
+
+
+#Apply Team names:
+
+div_teams = {
+    'Farm - Lower' : {              
+                "Team 1": 'Angels', 
+                "Team 2": 'Cubs', 
+                "Team 3": 'Red Sox', 
+                "Team 4": 'White Sox',
+                "Team 5": 'Giants', 
+                "Team 6": 'Athletics'
+    },
+    'Farm - Upper' : {              
+                "Team 1": 'Cubs', 
+                "Team 4": 'Angels', 
+                "Team 2": 'Red Sox', 
+                "Team 3": 'White Sox',
+                "Team 6": 'Giants', 
+                "Team 5": 'Athletics'
+    },
+    'Rookie' : {              
+                "Team 2": "Cubs (Lang/OBrien)", 
+                "Team 3": 'Angels (Defoor/Gates)', 
+                "Team 5": 'Red Sox (Groban/Buttorf)', 
+                "Team 6": 'White Sox (McDowell/Bagley)',
+                "Team 4": 'Giants (Evans/Berning)', 
+                "Team 1": 'Athletics (MacFarlane/Yarger)'
+    }    
+}
+
+for division in div_teams:
+    print(f'D {division}')
+    div_games = schedule.find(division=division)
+    # rewrite game schedule
+    for game in div_games:
+        try:
+            schedule.update(
+                dict(
+                    id=game['id'],
+                    home_team=div_teams[game['division']][game['home_team']],
+                    away_team=div_teams[game['division']][game["away_team"]],
+                ),
+                ["id"],
+            )
+        except KeyError as e:
+            print(f'Uknown Team found {e}')
+
+    # rewrite team names
+    all_teams = teams.find(division_name=division)
+    for team_data in all_teams:  # .distinct('team_name', division_name=division):
+        #print(team_data)
+        teams.update(
+            dict(
+                id=team_data['id'],
+                team_name = div_teams[division][team_data['team_name']]
+            ),
+            ["id"],
+        )
+
+
+    # if division == 'Farm - Upper':
+    #     for name in ['Cubs', 'Red Sox', 'White Sox', 'Angels', 'Athletics', 'Giants']:
+    #         data['team_name'] = name
+    #         table.insert(data)
+
+    # if division == 'Farm - Lower':
+    #     for name in [
+    #             'Angels', 
+    #             'Cubs', 
+    #             'Red Sox', 
+    #             'White Sox',
+    #             'Giants', 
+    #             'Athletics', 
+    #             ]:
+    #         data['team_name'] = name
+    #         table.insert(data)
 
 # print(f'DEBUG: rand was 124')
 # div='Rookie'
@@ -548,86 +835,3 @@ swap_ids(fromid=22, toid=131)
 
 random.seed(1974)
 
-# Minors
-schedule_by_week(
-    division="Minors",
-    start_week=1,
-    end_week=8,
-    day_of_week_prefs=[["Saturday", "Sunday"],  tuesday_thursday, weekdays],
-    field_prefs=[tepper_ketcham],
-    games_per_week_pattern=[6, 3, 6, 3, 6, 3, 6, 3, 3, 6, 3, 6, 3],
-)
-
-random.seed(myrand)
-
-
-# Majors
-schedule_by_week(
-    division="Majors",
-    start_week=1,
-    end_week=8,
-    day_of_week_prefs=[["Saturday"], ["Sunday"], tuesday_thursday, weekdays, anyday_but_friday],
-    field_prefs=[["Tepper"], ["Ketcham"], tepper_ketcham],
-    games_per_week_pattern=[8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 8, 9, 8],
-
-)
-
-
-"""
-
-3. No Friday games on TI unless absolutely necessary.
-
-7. PLAYOFFS
-Majors playoffs beginning on May 9.
-Pool play seems likely for all to keep kids playing longer.
-AA, AAA and Majors finals all at Tepper on the weekend of May 30-31.
-
-8.  Minors softball –
-one game per week at Ft. Scott South on Sunday afternoon.  No other games.
-
-9. Mid-week TI games for Majors should max out at 5 per team.
-
-10.Mid-week TI games for Minors AAA should max out at 3 per team.
-
-
-Nice to haves
-
-3.            We knew that games beginning at 6:30 at Ft. Scott could realistically only be Majors (and maybe…. Just maybe…. 
-Minors which was then a combination of AAA and AA).  Ft. Scott South is not great for Majors given the funky mound there, so that could leave an empty field space on Friday evening.
-
-4.            We knew really only Majors and more rarely AAA would use TI on a weekday and even then we wanted to spread those out evenly.  We wanted to max Majors out at 5 to 6 mid-week game on TI (knowing that some would rain out) and Minors (i.e. AAA/AA) at 2 to 3 mid-week games out there.
-
-
-1.  15U Softball schedule is unknown right now.  
-Will likely need space on some weekends at Ketcham or Ft. Scott South.  
-Should likely reserve some space there for 15U Softball that might be filled in later by others
-
-2.  All Rookie, AA and AAA teams should have the opportunity 
-to play one weekend game at Tepper, preferably not the first 
-or last game (there are extra parent duties for those games).
-
-3.  For teams playing multiple games on TI, there should 
-be a relatively even mix between Tepper and Ketcham.
-
-4.  Depending on our turf allocation from Rec & Park,
-we should spread those games out as evenly as possible, 
-particularly in the early season when rain is more likely.
-
-5.  We should try to achieve balance between teams such 
-that if teams play multiple times against each other 
-there is some time between such meetings.
-
- """
-
-
-# never have back to back
-# games in 5 days
-# GxGxG
-# Ths,Sat,Mon
-
-# one game in between
-# <3 games in 5 day windows  ## MAJORS ONLY
-
-# minors 6 and 3 pattern to fix weekend/weekday
-# rookie - paul good problem  FIXED
-# rookie - each team play tepper once on weekend  FIXED

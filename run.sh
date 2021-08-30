@@ -6,26 +6,26 @@
 
 
 
-for i in `seq 241 241`; do
+for i in $(seq 403 403); do
+    date
     rm little-league.db
 
     # create new data file
-    ./create-database.py
+    ./create-database-2021-fall.py
 
+
+    date 
     # apply schedule
     ./run-sched.py $i
     retVal=$?
     if [ $retVal -ne 0 ]; then
-        echo "Error"
+        echo "Error - ${retVal}"
     else
         echo "Good"
         break
     fi
 
 done
-
-
-
 
 
 echo "Posting results"
