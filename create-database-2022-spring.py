@@ -80,6 +80,30 @@ field_data = {
         'type': 'grass',
         'infield': 'dirt'
     },
+    # 'SouthSunset #1 North': {
+    #     'location': 'SF',
+    #     'size': '46/60',
+    #     'type': 'turf',
+    #     'infield': 'turf'
+    # },
+    # 'SouthSunset #2 South': {
+    #     'location': 'SF',
+    #     'size': '46/60',
+    #     'type': 'turf',
+    #     'infield': 'turf'
+    # },
+    # 'Kimbell #1 NW': {
+    #     'location': 'SF',
+    #     'size': '46/60',
+    #     'type': 'turf',
+    #     'infield': 'turf'
+    # },
+    # 'Kimbell #2 SE': {
+    #     'location': 'SF',
+    #     'size': '46/60',
+    #     'type': 'turf',
+    #     'infield': 'turf'
+    # },
     'Paul Goode Practice': {
         'location': 'SF',
         'size': '46/60',
@@ -92,6 +116,18 @@ field_data = {
         'type': 'turf',
         'infield': 'turf'
     },        
+    # 'McCoppin': {
+    #     'location': 'SF',
+    #     'size': '60/90',
+    #     'type': 'grass',
+    #     'infield': 'grass'
+    # },
+    # 'Sweeney': {
+    #     'location': 'SF',
+    #     'size': '60/90',
+    #     'type': 'grass',
+    #     'infield': 'grass'
+    # },
 }
 
 

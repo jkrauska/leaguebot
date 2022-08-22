@@ -87,18 +87,18 @@ division_data = {
 }
 
 field_data = {
-    # 'Ft. Scott - North': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'grass',
-    #     'infield': 'grass'
-    # },
-    # 'Ft. Scott - South': {
-    #     'location': 'SF',
-    #     'size': '46/60',
-    #     'type': 'grass',
-    #     'infield': 'dirt'
-    # },
+    'Ft. Scott - North': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'grass',
+        'infield': 'grass'
+    },
+    'Ft. Scott - South': {
+        'location': 'SF',
+        'size': '46/60',
+        'type': 'grass',
+        'infield': 'dirt'
+    },
     'Tepper': {
         'location': 'TI',
         'size': '46/60',

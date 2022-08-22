@@ -11,6 +11,8 @@ import csv
 from sheetfu import SpreadsheetApp
 from collections import OrderedDict, Counter
 
+from season_data import team_name_map
+
 
 db = dataset.connect('sqlite:///little-league.db')
 teams = db.get_table('teams')
@@ -81,9 +83,12 @@ def dump_html():
     html.write(output)
 
 
-def set_header(output=[]):
+def set_header(output=[], limit=False):
     output=[]
     header = list(schedule.find_one().keys())
+    if limit:
+        for hide in ['id', 'week', 'datestamp', 'day_of_year', 'division']:
+            header.remove(hide)
     output.append(header)
     return(output)
 
@@ -94,12 +99,20 @@ def get_divisions():
 def get_teams(division):
     return([ team['team_name'] for team in teams.distinct('team_name', division_name=division)])
 
+def get_fields():
+    return([ i['field_name'] for i in fields.distinct('field_name')])
+
+
 
 def get_games(division, team):
     #print('Getting games for %s %s' % (division, team))
     myoutput=[]
     for slot in schedule.find(division=division, order_by=['datestamp']):
         if team == slot['home_team'] or team == slot['away_team']:
+
+            for hide in ['id', 'week', 'datestamp', 'day_of_year', 'division']:
+                del slot[hide]
+            #print(len(slot))
             myoutput.append(list(slot.values()))
     #print('Found %s' % len(myoutput))
     if len(myoutput) > 0:
@@ -129,7 +142,6 @@ def publish_data(myoutput, sheet_name='FULL'):
 # Google Sheet
 sa = SpreadsheetApp('secret.json')
 spreadsheet = sa.open_by_id('19oc67iPOkwvxSbDuNwXyK2OPezt2ZiSO5-K7QAc5TJM')
-                            #  19oc67iPOkwvxSbDuNwXyK2OPezt2ZiSO5-K7QAc5TJM/
 
 # Full data set 
 output = []
@@ -137,10 +149,13 @@ output = set_header()
 
 count=1
 for slot in schedule.all(order_by=['datestamp']):
-    #print(count, slot)
+    # print("-"*80)
+    # print(count)
+    # print(slot)
+    # print(len(slot))
     count+=1
     output.append(list(slot.values()))
-output.append(['XXX']*20)
+output.append(['XXX']*len(slot))
 publish_data(output, 'FULL')
 
 
@@ -149,12 +164,19 @@ publish_data(output, 'FULL')
 for division in get_divisions():
 
     output_by_division = []
-    output_by_division = set_header()
+    output_by_division = set_header(limit=True)
 
     for team in get_teams(division):
-        colcount = len(list(schedule.find_one().keys()))
-        new_line = [''] * 1 +  [team] + [''] * (colcount-2)
-        #print(new_line)
+
+        colcount = len(list(schedule.find_one().keys()))-5
+
+        if division in team_name_map and team in team_name_map[division]:
+            pretty_team = team_name_map[division][team]
+        else:
+            pretty_team = team
+
+        new_line = [pretty_team] + [''] * (colcount-1)
+        #print(len(new_line))
         output_by_division.append(new_line)  # newline
 
         mygames = get_games(division, team)
@@ -168,6 +190,9 @@ output_unused = []
 output_unused = set_header()
 for slot in schedule.find(division=None, order_by=['datestamp']):
     output_unused.append(list(slot.values()))
+
+colcount = len(list(schedule.find_one().keys()))
+
 
 output_unused.append(['XXXX'] * colcount)
 
@@ -186,9 +211,14 @@ for slot in schedule.all():
             if division_and_team not in team_counters:
                 team_counters[division_and_team] = Counter()
                 # Init
+                # for dow in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
                 for dow in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
                     team_counters[division_and_team][dow] = 0
-                for category in ['total', 'home', 'away', 'turf', 'grass', 'TI', 'SF', 'M-F-TI', 'SS-TI', 'M-F-SF', 'SS-SF', 'Tepper', 'Ketcham', 'Ft. Scott', 'Kimbell', 'SouthSunset', 'Paul Goode', 'Tepper Home', 'Tepper Away' ]:
+
+                for field in get_fields():
+                    team_counters[division_and_team][field] = 0
+
+                for category in ['total', 'home', 'away', 'turf', 'grass', 'TI', 'SF', 'M-F-TI', 'SS-TI', 'M-F-SF', 'SS-SF', 'Tepper Home', 'Tepper Away' ]:
                     team_counters[division_and_team][category] = 0
 
             if team == slot['home_team']:
@@ -213,19 +243,10 @@ for slot in schedule.all():
                 #print(slot)
                 team_counters[division_and_team][f"SS-{slot['location']}" ] += 1
 
-            if slot['field'] in ['Tepper', 'Ketcham']:
+            if slot['field'] in get_fields():
                 team_counters[division_and_team][slot['field']] += 1
-            elif 'Ft. Scott' in slot['field']:
-                team_counters[division_and_team]['Ft. Scott'] += 1
-            elif 'Kimbell' in slot['field']:
-                team_counters[division_and_team]['Kimbell'] += 1
-            elif 'SouthSunset' in slot['field']:
-                team_counters[division_and_team]['SouthSunset'] += 1
-            elif 'Paul Goode' in slot['field']:
-                team_counters[division_and_team]['Paul Goode'] += 1
+
             
-
-
 
 analysis = []
 header = []
