@@ -114,63 +114,113 @@ field_data = {
 
 
 
-team_name_map = {}
-# team_name_map={
 
-#     'Lower Farm': {
-#         'Team 1': "Giants",
-#         'Team 2': "A's",
-#         'Team 3': 'Red Sox',
-#         'Team 4': 'Yankees',
-#     },
-#     'Upper Farm': {
-#         'Team 1': "A's",
-#         'Team 2': "Angels",
-#         'Team 3': 'Cubs',
-#         'Team 4': 'Giants',
-#         'Team 5': 'Red Sox',
-#         'Team 6': 'Yankees'
-#     },
 
-#     'Rookie': {
-#         'Team 1': 'Cardinals',
-#         'Team 2': 'Yankees',
-#         'Team 3': 'Astros',
-#         'Team 4': 'Red Sox',
-#         'Team 5': "A's",
-#         'Team 6': "Cubs",
-#         'Team 7': 'Angels',
-#         'Team 8': 'Giants'
-#     },
-#     'Minors AAA': {
-#         'Team 1': "A's",
-#         'Team 2': 'Angels',
-#         'Team 3': 'Cubs',
-#         'Team 4': 'Giants',
-#         'Team 5': "Red Sox",
-#         'Team 6': "Yankees",
-#     },
-#     'Minors AA': {
-#         'Team 1': "Yankees",
-#         'Team 2': 'Angels',
-#         'Team 3': "A's",
-#         'Team 4': 'Astros',
-#         'Team 5': "Red Sox",
-#         'Team 6': "Cardinals",
-#         'Team 7': "Cubs",
-#         'Team 8': "Giants",
-#     },
-#     'Majors': {
-#         'Team 1': "Cubs",
-#         'Team 10': 'Astros',
 
-#         'Team 2': "Angels",
-#         'Team 3': 'Cardinals',
-#         'Team 4': "A's",
-#         'Team 5': "RedSox",
-#         'Team 6': "Diamondbacks",
-#         'Team 7': "Nationals",
-#         'Team 8': "Giants",
-#         'Team 9': "Yankees",
-#     }
-# }
+team_name_map={
+    'Tee Ball': {
+        'Team 1': "Angels",
+        'Team 2': "Royals",
+        'Team 3': 'Brewers',
+        'Team 4': 'Yankees',
+        'Team 5': 'Red Sox',
+        'Team 6': 'Nationals',
+        'Team 7': 'Marlins',
+        'Team 8': 'Cardinals',
+        'Team 9': 'Giants',
+        'Team 10': 'Blue Jays',
+        'Team 11': 'Cubs',
+        'Team 12': 'Athletics',
+    },
+    "Farm - Lower": {
+        'Team 1': 'Giants',
+        'Team 2': 'Athletics',
+        'Team 3': 'Blue Jays',
+        'Team 4': 'Marlins',
+        'Team 5': 'Brewers',
+        'Team 6': 'Angels',
+        'Team 7': 'Cubs',
+        'Team 8': 'Yankees',
+        'Team 9': 'Red Sox',
+        'Team 10': 'Cardinals',
+    },
+
+    "Farm - Upper": {
+        'Team 1': 'Red Sox',
+        'Team 2': 'Giants',
+        'Team 3': 'Cubs',
+        'Team 4': 'Angels',
+        'Team 5': 'Marlins',
+        'Team 6': 'Athletics',
+        'Team 7': 'Brewers',
+        'Team 8': 'Blue Jays',
+        'Team 9': 'Yankees',
+        'Team 10': 'Cardinals',
+    },
+    "Rookie": {
+        'Team 1': 'Cubs',
+        'Team 2': 'Blue Jays',
+        'Team 3': 'Yankees',
+        'Team 4': 'Athletics',
+        'Team 5': 'Angels',
+        'Team 6': 'Cardinals',
+        'Team 7': 'Brewers',
+        'Team 8': 'Royals',
+        'Team 9': 'Red Sox',
+        'Team 10': 'Marlins',
+        'Team 11': 'Twins',
+        'Team 12': 'Giants',
+    },
+    
+    "Minors AA": {
+        'Team 1': 'Athletics',
+        'Team 2': 'Cardinals',
+        'Team 3': 'Red Sox',
+        'Team 4': 'Giants',
+        'Team 5': 'Cubs',
+        'Team 6': 'Angels',
+
+    },
+    "Minors AAA": {
+        'Team 1': 'Red Sox',
+        'Team 2': 'Cardinals',
+        'Team 3': 'Brewers',
+        'Team 4': 'Athletics',
+        'Team 5': 'Angels',
+        'Team 6': 'Yankees',
+        'Team 7': 'Cubs',
+        'Team 8': 'Giants',
+    },
+    "Majors": {
+        'Team 1': 'Athletics',
+        'Team 2': 'Marlins',
+        'Team 3': 'Blue Jays',
+        'Team 4': 'Angels',
+        'Team 5': 'Yankees',
+        'Team 6': 'Cubs',
+        'Team 7': 'Giants',
+        'Team 8': 'Red Sox',
+        'Team 9': 'Cardinals',
+        'Team 10': 'Brewers',
+    },
+
+    "Juniors": {
+        'Team 1': 'Angels',
+        'Team 2': 'Braves',
+        'Team 3': 'Red Sox',
+        'Team 4': 'Athletics',
+        'Team 5': 'Giants',
+        'Team 6': 'Marlins',
+        'Team 7': 'Cubs',
+        'Team 8': 'Yankees',
+    },
+
+    "Seniors": {
+        'Team 1': 'Angels',
+        'Team 2': 'Cardinals',
+        'Team 3': 'Giants',
+        'Team 4': 'Red Sox',
+    },
+
+
+}

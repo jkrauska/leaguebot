@@ -55,7 +55,36 @@ def swap_two_slots(fromid=None, toid=None):
         ["id"],
     )
 
+def apply_names():
+    for division in team_name_map:
+        print(f"D {division}")
+        div_games = schedule.find(division=division)
+        # rewrite game schedule
+        for game in div_games:
 
+            try:
+                schedule.update(
+                    dict(
+                        id=game["id"],
+                        home_team=team_name_map[game["division"]][game["home_team"]],
+                        away_team=team_name_map[game["division"]][game["away_team"]],
+                    ),
+                    ["id"],
+                )
+            except KeyError as e:
+                print(f"Uknown Team found {e}")
+
+        # rewrite team names
+        all_teams = teams.find(division_name=division)
+        for team_data in all_teams:  # .distinct('team_name', division_name=division):
+            # print(team_data)
+            teams.update(
+                dict(
+                    id=team_data["id"],
+                    team_name=team_name_map[division][team_data["team_name"]],
+                ),
+                ["id"],
+            )
 
 # Farm on Larel
 #swap_two_slots("AA-19","FMU-33")
@@ -99,54 +128,6 @@ def swap_two_slots(fromid=None, toid=None):
 # SWAP TB-05 and TB-03
 # FMU-18 and FMU-16
 # FMU-43 and FMU-45
-# swap_two_slots("TB-05","TB-03")
-# swap_two_slots("FMU-18","FMU-16")
-# swap_two_slots("FMU-43","FMU-45")
-
-# swap_two_slots("FML-28","FML-29")
-
-
-# Swap JRS-01 with OPEN-001
-# Swap SRS-04 with OPEN-002
-# Swap SRS-06 with OPEN-003
-# Swap JRS-16 with OPEN-006
-# Swap JRS-22 with OPEN-004
-# Swap SRS-13 with OPEN-005
-# Swap SRS-15 with OPEN-007
-# Swap JRS-35 with OPEN-008
-# swap_two_slots("JRS-01","OPEN-001")
-# swap_two_slots("SRS-04","OPEN-002")
-# swap_two_slots("SRS-06","OPEN-003")
-# swap_two_slots("JRS-16","OPEN-006")
-# swap_two_slots("JRS-22","OPEN-004")
-# swap_two_slots("SRS-13","OPEN-005")
-# swap_two_slots("SRS-15","OPEN-007")
-# swap_two_slots("JRS-35","OPEN-008")
-
-
-# RK-02 with RK-05
-# RK-06 with RK-01
-# RK-08 with RK-07
-# RK-07 with RK-09
-# RK-14 with RK-13
-# RK-22 with RK-24
-# RK-36 with RK-31
-# RK-42 with RK-37
-# RK-47 with RK-45
-# RK-52 with RK-51
-# swap_two_slots("RK-02","RK-05")
-# swap_two_slots("RK-06","RK-01")
-# swap_two_slots("RK-08","RK-07")
-# swap_two_slots("RK-07","RK-09")
-# swap_two_slots("RK-14","RK-13")
-# swap_two_slots("RK-22","RK-24")
-# swap_two_slots("RK-36","RK-31")
-# swap_two_slots("RK-42","RK-37")
-# swap_two_slots("RK-47","RK-45")
-# swap_two_slots("RK-52","RK-51")
-
-# RK-03 and RK-02
-# RK-14 and RK-16
-
-swap_two_slots("RK-03","RK-02")
-swap_two_slots("RK-14","RK-16")
+swap_two_slots("TB-05","TB-03")
+swap_two_slots("FMU-18","FMU-16")
+swap_two_slots("FMU-43","FMU-45")
